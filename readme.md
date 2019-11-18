@@ -10,7 +10,7 @@ Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Exp
 * Express
 * d3
 
-Andere benodigdheden zijn te vinden in [`package.json`]()
+Andere benodigdheden zijn te vinden in [`package.json`](https://github.com/qiubee/frontend-data/blob/master/package.json)
 
 ## Concept
 
