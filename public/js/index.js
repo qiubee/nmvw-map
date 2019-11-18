@@ -23,21 +23,26 @@ const nmvw = {
 
 getData(nmvw.apiURL, nmvw.apiQuery);
 
-// visualiseren met d3 (voorbeeld kaart -> https://www.youtube.com/watch?v=Qw6uAg3EO64)
-const svg = select("svg");
-const projection = geoEqualEarth();
-const pathGenerator = geoPath().projection(projection);
+// visualiseren met d3
+const svg = d3
+    .selectAll("svg")
+    .append("attr", );
 
-json("https://unpkg.com/world-atlas@1.1.4/world/110m.json")
-    .then(data => {
-    const countries = feature(data, data.objects.countries);
-    console.log(countries);
+// wereldkaart maken met d3 (voorbeeld kaart -> https://www.youtube.com/watch?v=Qw6uAg3EO64)
+// const svg = select("svg");
+// const projection = geoEqualEarth();
+// const pathGenerator = geoPath().projection(projection);
 
-    const paths = svg.selectAll("path")
-        .data(countries.features);
-    paths.enter().append("path")
-        .attr("d", d => pathGenerator(d));
-});
+// json("https://unpkg.com/world-atlas@1.1.4/world/110m.json")
+//     .then(data => {
+//     const countries = feature(data, data.objects.countries);
+//     console.log(countries);
+
+//     const paths = svg.selectAll("path")
+//         .data(countries.features);
+//     paths.enter().append("path")
+//         .attr("d", d => pathGenerator(d));
+// });
 
 // data ophalen met async / await
 async function getData(url, query) {
