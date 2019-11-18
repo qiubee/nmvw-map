@@ -26,5 +26,8 @@
   "homepage": "https://github.com/qiubee/frontend-data#readme",
   "devDependencies": {
     "nodemon": "^1.19.4"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
