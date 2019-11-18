@@ -1,3 +1,9 @@
+/* variables */
+:root {
+  --smooth-font: font-size ease 1s;
+  --smooth-margin: margin ease 1s;
+}
+
 /* fonts */
 @font-face {
     font-family: Montserrat;
@@ -11,7 +17,7 @@
 }
 
 /* set margin & padding to default */
-body, nav ul, h1 {
+body, nav ul, h1, h2 {
   margin: 0;
   padding: 0;
 }
@@ -22,12 +28,22 @@ body {
 }
 
 nav {
-  border-bottom: solid #1d2951 0.125em;
+  border-width: 0.125em;
+  border-style: solid;
+  border-image: 
+    linear-gradient( 
+      45deg,
+      #e94e55,
+      #00aaa0,
+      #f16534,
+      #80a932
+    ) 0 1 100%;
+  /* border gradient example from: https://codepen.io/chriscoyier/pen/XodmyY*/
 }
 
 nav ul {
   display: flex;
-  margin: -0.25em 0 -0.25em -0.5em;
+  margin: -0.05em 0 -0.25em -0.5em;
 }
 
 nav ul li {
@@ -39,6 +55,10 @@ nav ul li:nth-of-type(3) img {
   margin-top: -0.1em;
 }
 
+nav ul li:last-of-type img {
+  margin-left: -0.15em;
+}
+
 
 li img {
   min-height: 2.5em;
@@ -47,19 +67,103 @@ li img {
 }
 h1 {
   font-family: Montserrat, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
-  font-weight: 400;
-  font-size: 1.5em;
+  font-weight: 700;
+  font-size: 1.25em;
   color: #1d2951;
-  margin: 1.5em auto;
+  margin: 1em auto;
+  padding: 0 1em;
   text-align: center;
   min-width: 10.75em;
   max-width: 43em;
+  transition: var(--smooth-font), var(--smooth-margin);
 }
 
+#map {
+  min-width: 5em;
+  width: calc(100% - 1em);
+  margin: 0 auto;
+  min-height: 10em;
+}
+
+h2 {
+  font-family: Montserrat, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 1.1em;
+  margin: 0 0.5em;
+  transition: var(--smooth-font), var(--smooth-margin);
+}
+
+p {
+  font-family: Montserrat, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 0.9em;
+  color: #666666;
+  margin: 0.5em 0.65em;
+  transition: var(--smooth-font), var(--smooth-margin);
+}
+
+p a {
+  color: #ea4e55;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+p a:hover {
+  animation: boop 2s; 
+}
+
+p > abbr {
+  color: #696aff;
+  text-decoration: none;
+}
+
+p > abbr:hover {
+  cursor: pointer;
+}
+
+/* tablet */
 @media screen and (min-width: 35em) and (max-width: 65em) {
-
+  h1 {
+    font-size: 1.5em;
+    margin: 2em auto;
+    padding: 0 2em;
+    transition: var(--smooth-font);
+  }
+  
+  h2 {
+    font-size: 1.25em;
+    margin: 0 1em;
+    transition: var(--smooth-font);
+  }
+  
+  p {
+    font-size: 1em;
+    margin: 0.7em 1.25em;
+    transition: var(--smooth-font);
+  }
 }
 
+/* laptop */
 @media screen and (min-width: 65em) {
+ h1 {
+    font-size: 1.75em;
+    margin: 1.5em auto;
+    padding: auto;
+    transition: var(--smooth-font), var(--smooth-margin);
+  }
+}
 
+/* animations */
+@keyframes boop {
+  0% {
+    color: #ea4e55;
+  }
+  
+  33% {
+    color: #00aaa0;
+  }
+  
+  66% {
+    color: #80a932;
+  }
 }
