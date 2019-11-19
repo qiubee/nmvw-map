@@ -138,7 +138,7 @@ p > abbr:hover {
   
   p {
     font-size: 1em;
-    margin: 0.7em 1.25em;
+    margin: 0.7em 1.3em;
     transition: var(--smooth-font);
   }
 }
@@ -150,6 +150,18 @@ p > abbr:hover {
     margin: 1.5em auto;
     padding: auto;
     transition: var(--smooth-font), var(--smooth-margin);
+  }
+    
+  h2 {
+    font-size: 1.1em;
+    margin: 0 1em;
+    transition: var(--smooth-font);
+  }
+  
+  p {
+    font-size: 1em;
+    margin: 0.5em 1.15em;
+    transition: var(--smooth-font);
   }
 }
 

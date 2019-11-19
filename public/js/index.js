@@ -33,7 +33,7 @@ const svg = d3
 // const projection = geoEqualEarth();
 // const pathGenerator = geoPath().projection(projection);
 
-// json("https://unpkg.com/world-atlas@1.1.4/world/110m.json")
+// d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json")
 //     .then(data => {
 //     const countries = feature(data, data.objects.countries);
 //     console.log(countries);
