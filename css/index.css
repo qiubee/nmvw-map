@@ -22,6 +22,14 @@ body, nav ul, h1, h2 {
   padding: 0;
 }
 
+/* hide */
+#map h2 {
+  position: absolute;
+  top: -1000em;
+  left: -1000em;
+}
+
+
 /* styling */
 body {
   background-color: #fff;
@@ -52,24 +60,25 @@ nav ul li {
 
 
 nav ul li:nth-of-type(3) img {
-  margin-top: -0.1em;
+  margin-top: -1%;
 }
 
 nav ul li:last-of-type img {
   margin-left: -0.15em;
 }
 
-
 li img {
   min-height: 2.5em;
   max-height: 5em;
   width: 100%;
 }
+
 h1 {
   font-family: Montserrat, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
   font-weight: 700;
   font-size: 1.25em;
   color: #1d2951;
+  line-height: 1.6em;
   margin: 1em auto;
   padding: 0 1em;
   text-align: center;
@@ -79,16 +88,44 @@ h1 {
 }
 
 #map {
-  min-width: 5em;
-  width: calc(100% - 1em);
+  display: flex;
+  flex-direction: column;
+  min-width: 15em;
+  max-width: 65em;
+  margin: 0 0.5em 1.5em 0.5em;
+}
+
+#map p:first-of-type {
+  font-size: 0.75em;
+  font-style: italic;
+  text-align: center;
   margin: 0 auto;
-  min-height: 10em;
+  padding: 0 1em 0.75em 1em;
+}
+
+#map svg {
+  /* make full screen width (code from: https://css-tricks.com/full-width-containers-limited-width-parents/) */
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  margin-left: -50vw;
+  /* -- */
+  fill: lightgreen;
+  stroke: rgba(3, 2, 2, 0.05);
+  background: rgba(023, 121, 243, 0.7);
+}
+
+#map h3 {
+  font-family: Montserrat, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 1em;
+  margin: 0.75em 0;
 }
 
 h2 {
   font-family: Montserrat, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
   font-weight: 400;
-  font-size: 1.1em;
+  font-size: 1em;
   margin: 0 0.5em;
   transition: var(--smooth-font), var(--smooth-margin);
 }
@@ -96,9 +133,12 @@ h2 {
 p {
   font-family: Montserrat, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
   font-weight: 400;
-  font-size: 0.9em;
   color: #666666;
-  margin: 0.5em 0.65em;
+}
+
+p:last-of-type {
+  font-size: 0.9em;
+  margin: 0.5em 0.6em;
   transition: var(--smooth-font), var(--smooth-margin);
 }
 
@@ -131,26 +171,73 @@ p > abbr:hover {
   }
   
   h2 {
-    font-size: 1.25em;
-    margin: 0 1em;
+    font-size: 1.15em;
+    margin: 0 0.85em;
     transition: var(--smooth-font);
   }
   
-  p {
+  p:last-of-type {
     font-size: 1em;
-    margin: 0.7em 1.25em;
+    margin: 0.7em 1.05em;
     transition: var(--smooth-font);
   }
+  
+  #map {
+    margin: 0 1.1em 1.5em 1.1em;
+  }
+  
+  #map p:first-of-type {
+    font-size: 0.9em;
+    padding: 0 1em 0.9em 1em;
+  }
+  
+  #map h3 {
+    font-size: 1.25em;
+  }
+  
 }
 
 /* laptop */
 @media screen and (min-width: 65em) {
- h1 {
+  h1 {
     font-size: 1.75em;
     margin: 1.5em auto;
     padding: auto;
     transition: var(--smooth-font), var(--smooth-margin);
   }
+    
+  h2 {
+    font-size: 1.1em;
+    margin: 0 1em;
+    transition: var(--smooth-font);
+  }
+  
+  p:last-of-type {
+    font-size: 1em;
+    margin: 0.5em 1.15em;
+    transition: var(--smooth-font);
+  }
+  
+  #map {
+    margin: 0 auto 1.5em auto;
+  }
+  
+  #map p:first-of-type {
+    font-size: 1em;
+    padding: 0 1em 1em 1em;
+  }
+  
+  #map h3 {
+    font-size: 1.5em;
+  }
+  
+  #map svg {
+    position: initial;
+    width: initial;
+    left: initial;
+    margin-left: initial;
+  }
+  
 }
 
 /* animations */
