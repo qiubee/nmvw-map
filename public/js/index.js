@@ -3,7 +3,7 @@
 // object met nmvw info
 const nmvw = {
     apiURL: "https://api.data.netwerkdigitaalerfgoed.nl/datasets/ivo/NMVW/services/NMVW-05/sparql",
-    apiQuery: `
+    apiOriginalQuery: `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX dc: <http://purl.org/dc/elements/1.1/>
     PREFIX dct: <http://purl.org/dc/terms/>
@@ -18,7 +18,6 @@ const nmvw = {
         ?place skos:prefLabel ?placeName .
     }
     ORDER BY DESC(?objCount)`,
-    continentLinks: ["https://hdl.handle.net/20.500.11840/termmaster6025", "https://hdl.handle.net/20.500.11840/termmaster3", "https://hdl.handle.net/20.500.11840/termmaster8401", "https://hdl.handle.net/20.500.11840/termmaster6782", "https://hdl.handle.net/20.500.11840/termmaster19804", "https://hdl.handle.net/20.500.11840/termmaster18062"], // Europa, Afrika, Azie, Oceanie, Amerika, Noordpool, Antartica
     apiContinents: `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX dc: <http://purl.org/dc/elements/1.1/>
     PREFIX dct: <http://purl.org/dc/terms/>
@@ -70,12 +69,99 @@ const nmvw = {
       # geef objecten bij de onderliggende categorische termen
       ?cho edm:isRelatedTo ?allCatTerms .
       
-    }`
+    }`,
+    apiCatAndCont: `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    PREFIX dct: <http://purl.org/dc/terms/>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX edm: <http://www.europeana.eu/schemas/edm/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX hdlh: <https://hdl.handle.net/20.500.11840/termmaster>
+    PREFIX wgs84: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+    PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX gn: <http://www.geonames.org/ontology#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    
+    SELECT ?placeName ?category (COUNT(?cho) AS ?objCount) WHERE {
+      
+      # CONTINENTEN
+      # zoek op continent Antartica
+      <https://hdl.handle.net/20.500.11840/termmaster2> skos:narrower ?geoTerm .
+      ?geoTerm skos:prefLabel ?placeName .
+    
+      # geef van Oceanen de onderliggende geografische termen
+      ?geoTerm skos:narrower* ?allGeoTerms .
+    
+      # geef objecten bij de onderliggende geografische termen
+      ?cho dct:spatial ?allGeoTerms .
+      
+      # CATEGORIEEN
+      # zoek alle categorieen
+      <https://hdl.handle.net/20.500.11840/termmaster2802> skos:narrower ?catTerm .
+      ?catTerm skos:prefLabel ?category .
+      
+      # geef per categorie de onderliggende categorische termen
+      ?catTerm skos:narrower* ?allCatTerms .
+      
+      # geef objecten bij de onderliggende categorische termen
+      ?cho edm:isRelatedTo ?allCatTerms .
+      
+    } ORDER BY DESC(?objCount)`,
+    apiCatContCoord: `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    PREFIX dct: <http://purl.org/dc/terms/>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX edm: <http://www.europeana.eu/schemas/edm/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX hdlh: <https://hdl.handle.net/20.500.11840/termmaster>
+    PREFIX wgs84: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+    PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX gn: <http://www.geonames.org/ontology#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    
+    SELECT ?continent ?countryName ?lat ?long ?category (COUNT(?cho) AS ?objCount) WHERE {
+      
+      # CONTINENTEN
+      # zoekt alle continenten
+      <https://hdl.handle.net/20.500.11840/termmaster2> skos:narrower ?geoTerm .
+      ?geoTerm skos:prefLabel ?continent .
+    
+      # geeft per continent de onderliggende geografische termen
+      ?geoTerm skos:narrower* ?allGeoTerms .
+    
+      # geeft objecten bij de onderliggende geografische termen
+      ?cho dct:spatial ?allGeoTerms .
+    
+      # LANDEN
+      # zoekt in GeoNames naar de naam van het land
+      ?allGeoTerms skos:exactMatch/gn:parentCountry ?country .
+      ?country gn:name ?countryName .
+    
+      # COORDINATEN
+      # geeft de latitude en longtitude van het land (coordinaten zijn niet precies)
+      ?country wgs84:lat ?lat .
+      ?country wgs84:long ?long .
+      
+      # CATEGORIEEN
+      # zoekt alle hoofdcategorieen
+      <https://hdl.handle.net/20.500.11840/termmaster2802> skos:narrower ?catTerm .
+      ?catTerm skos:prefLabel ?category .
+      
+      # geeft per categorie alle onderliggende categorische termen
+      ?catTerm skos:narrower* ?allCatTerms .
+      
+      # geeft objecten bij alle onderliggende categorische termen
+      ?cho edm:isRelatedTo ?allCatTerms
+      
+    } GROUP BY ?continent ?countryName ?lat ?long ?category
+    ORDER BY DESC(?objCount)`
 };
 
-getData(nmvw.apiURL, nmvw.apiContinents);
-
-// visualiseren met d3
+// -- Visualiseren met d3 --
 
 // elementen aanmaken
 const title = d3
@@ -118,6 +204,9 @@ d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json")
             .attr("d", d => path(d));
     });
 
+// -- Data ophalen --
+getData(nmvw.apiURL, nmvw.apiCatContCoord);
+
 // data ophalen met async / await
 async function getData(url, query) {
     const response = await fetch(url+ "?query=" + encodeURIComponent(query) + "&format=json");
@@ -126,20 +215,89 @@ async function getData(url, query) {
     console.log(data);
     const normalizedData = await data.map(item => {
         let newArr = {};
-        switch (item) {
-            case item.objCount.value:
-                console.log("amount added");
-                newArr.amount = Number(item.objCount.value);
-                break;
-            case (item.type.value !== undefined):
-                newArr.type = item.type.value;
-                break;
-            case item.placeName.value:
-                newArr.place = item.placeName.value;
-                break;
+        if (item.hasOwnProperty("placeName") === true) {
+            newArr.place = item.placeName.value;
         }
+        if (item.hasOwnProperty("continent") === true) {
+            newArr.continent = item.continent.value;
+        }
+        if (item.hasOwnProperty("countryName") === true) {
+            newArr.country = item.countryName.value;
+        }
+        if (item.hasOwnProperty("lat") === true) {
+            newArr.lat = Number(item.lat.value);
+        }
+        if (item.hasOwnProperty("long") === true) {
+            newArr.long = Number(item.long.value);
+        }
+        if (item.hasOwnProperty("category") === true) {
+            newArr.category = item.category.value;
+        }
+        if (item.hasOwnProperty("objCount") === true) {
+            newArr.amount = Number(item.objCount.value);
+        }
+        if (item.hasOwnProperty("type") === true) {
+            newArr.type = item.type.value;
+        }
+        
+        // switch (item) {
+        //     case item.objCount.value:
+        //         console.log("amount added");
+        //         newArr.amount = Number(item.objCount.value);
+        //         break;
+        //     // case (item.type.value !== undefined):
+        //     //     newArr.type = item.type.value;
+        //     //     break;
+        //     case item.placeName.value:
+        //         newArr.place = item.placeName.value;
+        //         break;
+        // }
+
         return newArr;
     });
     console.log(normalizedData);
     return normalizedData;
 }
+
+
+// Maak functie die data ophaald en data omvormd
+// async function getData (url, query) {
+//     const response = await fetch(url+ "?query=" + encodeURIComponent(query) + "&format=json");
+//     const json = await response.json();
+//     const data = await json.results.bindings;
+//     console.log(data);
+//     return data;
+//  }
+
+// function transformData (data) {
+//     console.log(data);
+//     const transformed = data.map(item => {
+//                 let newArr = {};
+//                 if (item.hasOwnProperty("placeName") === true) {
+//                     newArr.place = item.placeName.value;
+//                 }
+//                 if (item.hasOwnProperty("continent") === true) {
+//                     newArr.continent = item.continent.value;
+//                 }
+//                 if (item.hasOwnProperty("countryName") === true) {
+//                     newArr.country = item.countryName.value;
+//                 }
+//                 if (item.hasOwnProperty("lat") === true) {
+//                     newArr.lat = Number(item.lat.value);
+//                 }
+//                 if (item.hasOwnProperty("long") === true) {
+//                     newArr.long = Number(item.long.value);
+//                 }
+//                 if (item.hasOwnProperty("category") === true) {
+//                     newArr.category = item.category.value;
+//                 }
+//                 if (item.hasOwnProperty("objCount") === true) {
+//                     newArr.amount = Number(item.objCount.value);
+//                 }
+//                 if (item.hasOwnProperty("type") === true) {
+//                     newArr.type = item.type.value;
+//                 }
+//                 return newArr;
+//             });
+//     return transformed;
+// }
