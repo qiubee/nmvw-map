@@ -1,8 +1,14 @@
 # Wereldkaart met populaire categorieën per continent en per land
 
-Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Express gebruikt voor het bouwen van de applicatie.
+Een interactieve wereldkaart met het totaal aantal voorwerpen en de verdeling van categorieen per continent en per land. De data is afkomstig van de collectie van het Nationaal Museum van Wereldculturen. Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Express gebruikt voor het bouwen van de applicatie.
 
-**[Bekijk interactieve datavisualisatie](https://qiubee.github.io/frontend-data/)**
+**[Bekijk wereldkaart](https://qiubee.github.io/frontend-data/)**
+
+![World map with pie charts showing top 3 of categories with the most objects found in the collection of the National Museum of Worldcultures](images/concept-small-cut.jpg)
+
+## Concept
+
+Een interactieve datavisualisatie waarmee je de collectie van het Nationaal Museum van Wereldculturen kunt verkennen. Kijk op de wereldkaart waar objecten in de collectie zijn gevonden. Elk object in de collectie is gecategoriseerd. Met een cirkeldiagram wordt de categorieën met de meeste objecten weergegeven. Klik op een van deze cirkels om dieper de collectie in te duiken om te ontdekken wat er verbogen zit in de collectie.
 
 ## Benodigdheden
 
@@ -11,10 +17,6 @@ Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Exp
 * d3
 
 Andere benodigdheden zijn te vinden in [`package.json`](https://github.com/qiubee/frontend-data/blob/master/package.json)
-
-## Concept
-
-Een interactieve datavisualisatie waarmee je de collectie van het Nationaal Museum van Wereldculturen kunt verkennen. Kijk op de wereldkaart waar objecten in de collectie zijn gevonden. Elk object in de collectie is gecategoriseerd. Met een cirkeldiagram wordt de categorieën met de meeste objecten weergegeven. Klik op een van deze cirkels om dieper de collectie in te duiken om te ontdekken wat er verbogen zit in de collectie.
 
 ## Installeren
 
