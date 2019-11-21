@@ -2,9 +2,9 @@
 
 Een interactieve wereldkaart met het totaal aantal voorwerpen en de verdeling van categorieen per continent en per land. De data is afkomstig van de collectie van het Nationaal Museum van Wereldculturen. Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Express gebruikt voor het bouwen van de applicatie.
 
-**[Bekijk wereldkaart](https://qiubee.github.io/frontend-data/)**
-
 ![World map with pie charts showing top 3 of categories with the most objects found in the collection of the National Museum of Worldcultures](images/concept-small-cut.jpg)
+
+**[Bekijk interactieve wereldkaart](https://qiubee.github.io/frontend-data/)**
 
 ## Concept
 
@@ -30,32 +30,61 @@ Ga naar `localhost:8000` in de browser om de interactieve visualisatie te bekijk
 
 ## Data
 
-De data is opgehaald met de API van het NMVW. Het NMVW gebruikt SPARQL voor het ophalen van data uit de collectie. De data die is opgehaal is:
+De data is opgehaald uit de database van het NMVW. Het NMVW gebruikt daarvoor SPARQL. De data die wordt opgehaald bestaat uit:
 
-* Geografische herkomst
-* Categorie van object
-* Aantal objecten per werelddeel
+* Continent
+* Land
+* Coördinaten van het land
+* Hoofdcategorieën van objecten
+* Totaal aantal objecten per categorie
 
-In SPARQL is `dct:spatial` en `dc:type` gebruikt om de plaats en het type van het object op te halen. En met `(COUNT() AS())` zijn het aantal objecten op bij elkaar opgeteld.
-
-Dit is de query die gebruikt is voor het ophalen van de data:
+Met deze SPARQL-query is het mogelijk de data op te halen:
 
 ```SPARQL
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX edm: <http://www.europeana.eu/schemas/edm/>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX wgs84: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX gn: <http://www.geonames.org/ontology#>
 
-SELECT ?placeName ?type (COUNT(?obj) AS ?objAmount)  WHERE {
-    # <hier de link uit thesaurus van werelddeel>
-    skos:narrower* ?place .
-    ?obj dc:type ?type ;
-         dct:spatial ?place .
-    ?place skos:prefLabel ?placeName .
-}
-ORDER BY DESC(?objAmount)
+SELECT ?continent ?countryName ?lat ?long ?category (COUNT(?cho) AS ?objCount) WHERE {
+  
+  # CONTINENTEN
+  # geeft alle continenten
+  <https://hdl.handle.net/20.500.11840/termmaster2> skos:narrower ?geoTerm .
+  ?geoTerm skos:prefLabel ?continent .
+
+  # geeft per continent de onderliggende geografische termen
+  ?geoTerm skos:narrower* ?allGeoTerms .
+
+  # geeft objecten bij de onderliggende geografische termen
+  ?cho dct:spatial ?allGeoTerms .
+
+  # LANDEN
+  # zoekt in GeoNames naar de naam van het land
+  ?allGeoTerms skos:exactMatch/gn:parentCountry ?country .
+  ?country gn:name ?countryName .
+
+  # COORDINATEN
+  # geeft de latitude en longtitude van het land
+  ?country wgs84:lat ?lat .
+  ?country wgs84:long ?long .
+  
+  # CATEGORIEEN
+  # geeft alle hoofdcategorieen
+  <https://hdl.handle.net/20.500.11840/termmaster2802> skos:narrower ?catTerm .
+  ?catTerm skos:prefLabel ?category .
+  
+  # geeft per categorie alle onderliggende categorische termen
+  ?catTerm skos:narrower* ?allCatTerms .
+  
+  # geeft objecten bij alle onderliggende categorische termen
+  ?cho edm:isRelatedTo ?allCatTerms .
+  
+} GROUP BY ?continent ?countryName ?lat ?long ?category
+ORDER BY DESC(?objCount)
 ```
 
 ## Licentie
