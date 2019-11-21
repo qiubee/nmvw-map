@@ -266,7 +266,8 @@ async function getData(url, query) {
                             .entries(normalizedData);
                             
     nestedData.forEach(function (continent) {
-        return continent.countries = continent.values.length;
+        continent.countries = continent.values.length;
+        return continent.countries;
     });
     console.log("Gegroepeerde data: ", nestedData);
 
