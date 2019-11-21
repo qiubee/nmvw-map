@@ -68,7 +68,7 @@ SELECT ?continent ?countryName ?lat ?long ?category (COUNT(?cho) AS ?objCount) W
   ?country gn:name ?countryName .
 
   # COORDINATEN
-  # geeft de latitude en longtitude van het land
+  # geeft de latitude en longitude van het land
   ?country wgs84:lat ?lat .
   ?country wgs84:long ?long .
   
