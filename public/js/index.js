@@ -158,7 +158,8 @@ const nmvw = {
       ?cho edm:isRelatedTo ?allCatTerms
       
     } GROUP BY ?continent ?countryName ?lat ?long ?category
-    ORDER BY DESC(?objCount)`
+    ORDER BY DESC(?objCount)`,
+    continentCoordinates: [{continent: "Afrika", lat: 7, long: 21}, {continent: "Amerika", lat: 8, long: 73}, {continent: "Antarctica", lat: 78, long:16}, {continent: "Azië", lat: 30, long: 89}, {continent: "Eurazië", lat: 49, long: 9}, {continent: "Oceanen", lat: 4, long: 132}, {continent: "Oceanië", lat: 18, long: 139}] 
 };
 
 // -- Visualiseren met d3 --
@@ -211,9 +212,10 @@ getData(nmvw.apiURL, nmvw.apiCatContCoord);
 async function getData(url, query) {
     const response = await fetch(url+ "?query=" + encodeURIComponent(query) + "&format=json");
     const json = await response.json();
-    const data = await json.results.bindings;
-    console.log(data);
-    const normalizedData = await data.map(item => {
+    const data = json.results.bindings;
+    console.log("Rauwe data: ", data);
+    // data transformeren
+    const normalizedData = data.map(item => {
         let newArr = {};
         if (item.hasOwnProperty("placeName") === true) {
             newArr.place = item.placeName.value;
@@ -255,8 +257,21 @@ async function getData(url, query) {
 
         return newArr;
     });
-    console.log(normalizedData);
-    return normalizedData;
+    console.log("Getransformeerde data: ", normalizedData);
+
+    // data groeperen
+    let nestedData = d3.nest()
+                            .key(function (d) { return d.continent; })
+                            .key(function (d) { return d.country; })
+                            .entries(normalizedData);
+                            
+    nestedData.forEach(function (continent) {
+        return continent.countries = continent.values.length;
+    });
+    console.log("Gegroepeerde data: ", nestedData);
+
+    
+    //console.log(nestedData);
 }
 
 
