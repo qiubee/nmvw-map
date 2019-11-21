@@ -1,4 +1,4 @@
-# Frontend Data
+# Wereldkaart met populaire categorieën per continent en per land
 
 Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Express gebruikt voor het bouwen van de applicatie.
 
