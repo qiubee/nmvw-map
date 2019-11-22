@@ -61,8 +61,8 @@ const nmvw = {
         long: 21
     }, {
         continent: "Amerika",
-        lat: 8,
-        long: 73
+        lat: 26,
+        long: -104.5
     }, {
         continent: "Antarctica",
         lat: 78,
@@ -81,8 +81,8 @@ const nmvw = {
         long: 132
     }, {
         continent: "Oceanië",
-        lat: 18,
-        long: 139
+        lat: -18.5,
+        long: 138.5
     }]
 };
 
