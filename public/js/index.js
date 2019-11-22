@@ -93,7 +93,7 @@ const path = d3.geoPath().projection(projection);
 const title = d3
     .select("#map")
     .append("h2")
-    .text("Overzicht categorieën van collectie NMVW per land.");
+    .text("Wereldkaart met populaire categorieën per continent en per land.");
 
 const explanation = d3
     .select("#map")
@@ -141,16 +141,17 @@ function drawMap() {
 
 function plotData(data) {
     svg.selectAll("circle")
-            .data(data)
+        .data(data)
         .enter()
-            .append("circle")
-            .attr("class", "continent")
-            .attr("cx", function (d) {
-                return projection([d.long, d.lat])[0];
-            })
-            .attr("cy", function (d) {
-                return projection([d.long, d.lat])[1];
-            });
+        .append("circle")
+        .attr("class", "continent")
+        .attr("cx", function (d) {
+            return projection([d.long, d.lat])[0];
+        })
+        .attr("cy", function (d) {
+            return projection([d.long, d.lat])[1];
+        })
+        .attr("r", "");
 }
 
 // -- Data ophalen en verwerken --
@@ -159,7 +160,7 @@ async function configureData(url, query) {
     let data = await getData(url, query);
     // console.log("Raw data: ", data);
     data = transformData(data);
-    // console.log("Transformed data: ", data);
+    console.log("Transformed data: ", data);
     plotData(data);
     //return data;
 }
@@ -181,7 +182,7 @@ function transformData(data) {
     data = groupData(data);
     // console.log("Grouped data: ", data);
     data = addContinentLatLong(data);
-    console.log("Added coordinates continents :", data);
+    console.log("Add coordinates to continents: ", data);
     // data = calculateData(data);
     // console.log("Calculated data: ", data);
     return data;
