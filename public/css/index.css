@@ -110,9 +110,17 @@ h1 {
   left: 50%;
   margin-left: -50vw;
   /* -- */
+  background: rgba(023, 121, 243, 0.7);
+}
+
+#map svg path {
   fill: lightgreen;
   stroke: rgba(3, 2, 2, 0.05);
-  background: rgba(023, 121, 243, 0.7);
+}
+
+#map svg circle {
+  fill: darkslateblue;
+  r: 1em;
 }
 
 #map h3 {
