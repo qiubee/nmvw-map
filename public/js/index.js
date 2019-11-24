@@ -61,8 +61,8 @@ const nmvw = {
         long: 21
     }, {
         continent: "Amerika",
-        lat: 26,
-        long: -104.5
+        lat: 15,
+        long: -90.5
     }, {
         continent: "Antarctica",
         lat: 78,
@@ -81,8 +81,8 @@ const nmvw = {
         long: 132
     }, {
         continent: "Oceanië",
-        lat: -18.5,
-        long: 138.5
+        lat: -6.5,
+        long: 128.5
     }]
 };
 
@@ -91,35 +91,39 @@ const path = d3.geoPath().projection(projection);
 
 // -- Elementen aanmaken --
 const title = d3
-    .select("#map")
+    .select("div")
     .append("h2")
     .text("Wereldkaart met populaire categorieën per continent en per land.");
 
 const explanation = d3
-    .select("#map")
+    .select("div")
     .append("p")
     .text("Klik op een cirkel om in te zoomen en selecteer een land om dieper in de collectie te duiken.");
 
 const svg = d3
-    .select("#map")
+    .select("div")
     .append("svg")
     .attr("viewBox", "50 0 850 496");
 
 const legend = d3
-    .select("#map")
+    .select("div")
     .append("h3")
     .text("Legenda");
 
 const legendContent = d3
-    .select("#map")
+    .select("div")
     .append("p");
 
-// -- Haal data op en schoon het op --
+// --- Visualiseren ---
+deleteNoScript();
+drawMap();
 configureData(nmvw.apiURL, nmvw.apiQuery);
 
-// -- Maak wereldkaart --
-drawMap();
-
+// Verwijder noscript
+function deleteNoScript() {
+    d3.select("div").select("p").remove();
+    d3.select("div").attr("class", null);
+}
 
 // Wereldkaart maken met d3
 function drawMap() {
@@ -137,7 +141,7 @@ function drawMap() {
 }
 
 // Data op de wereldkaart zetten
-// code gebruikt van: https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-topojson-and-d3-js en https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
+// code gebruikt van: https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-tocsript en https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
 
 function plotData(data) {
     svg.selectAll("circle")
@@ -151,7 +155,7 @@ function plotData(data) {
         .attr("cy", function (d) {
             return projection([d.long, d.lat])[1];
         })
-        .attr("r", "");
+        .attr("r", "1em");
 }
 
 // -- Data ophalen en verwerken --
@@ -182,9 +186,9 @@ function transformData(data) {
     data = groupData(data);
     // console.log("Grouped data: ", data);
     data = addContinentLatLong(data);
-    console.log("Add coordinates to continents: ", data);
-    // data = calculateData(data);
-    // console.log("Calculated data: ", data);
+    // console.log("Add coordinates to continents: ", data);
+    data = calculateData(data);
+    // console.log("Calculated data: ", data);:  
     return data;
 }
 
@@ -265,7 +269,7 @@ function calculateData(data) {
             }
         }
     }
-    console.log("Totaal objecten: ", amount);
+    console.log("Total objects: ", amount);
 
     // tel alle objecten van continent ---> Tip danny: loop over de key en values van het object
     data.forEach(function (continent) {
