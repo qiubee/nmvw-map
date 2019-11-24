@@ -87,10 +87,9 @@ function configureData(url, query) {
 
         case 2:
           data = _context.sent;
-          // console.log("Raw data: ", data);
           data = transformData(data);
           console.log("Transformed data: ", data);
-          plotData(data); //return data;
+          plotData(data);
 
         case 6:
         case "end":
