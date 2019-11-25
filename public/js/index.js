@@ -88,6 +88,7 @@ const nmvw = {
 
 const projection = d3.geoPatterson();
 const path = d3.geoPath().projection(projection);
+const scale = d3.scaleSqrt();
 
 // -- Elementen aanmaken --
 const title = d3
@@ -114,10 +115,15 @@ const legendContent = d3
     .select("div")
     .append("p");
 
+visualize();
+
 // --- Visualiseren ---
+async function visualize() {
 deleteNoScript();
-drawMap();
-configureData(nmvw.apiURL, nmvw.apiQuery);
+const draw = await drawMap();
+const data = await configureData(nmvw.apiURL, nmvw.apiQuery);
+plotData(data);
+}
 
 // Verwijder noscript
 function deleteNoScript() {
@@ -125,48 +131,75 @@ function deleteNoScript() {
     d3.select("div").attr("class", null);
 }
 
-// Wereldkaart maken met d3
-function drawMap() {
-    // kaart maken met world-atlas (voorbeeld van: https://www.youtube.com/watch?v=Qw6uAg3EO64)
-    d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json")
-        .then(data => {
-            const countries = topojson.feature(data, data.objects.countries);
-            svg.selectAll("path")
-                .data(countries.features)
-                .enter()
-                .append("path")
-                .attr("class", "country")
-                .attr("d", d => path(d));
-        });
+// Wereldkaart maken met d3 
+// kaart maken met world-atlas (voorbeeld van: https://www.youtube.com/watch?v=Qw6uAg3EO64)
+async function drawMap() {
+    const data = await d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json");
+    const countries = topojson.feature(data, data.objects.countries);
+    console.log(data);
+    svg.append("g")
+        .attr("class", "countries")
+        .selectAll("path")
+        .data(countries.features)
+        .enter()
+        .append("path")
+        .attr("d", d => path(d));
 }
 
 // Data op de wereldkaart zetten
 // code gebruikt van: https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-tocsript en https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
-
 function plotData(data) {
-    svg.selectAll("circle")
+
+    // enter data
+    svg.append("g")
+        .attr("class", "continents")
+        .selectAll("circle")
         .data(data)
         .enter()
         .append("circle")
-        .attr("class", "continent")
         .attr("cx", function (d) {
             return projection([d.long, d.lat])[0];
         })
         .attr("cy", function (d) {
             return projection([d.long, d.lat])[1];
         })
-        .attr("r", "1em");
+        .transition()
+        .duration(1500)
+        .attr("r", function(d) {
+            return scale(d.objects) / 10;
+        });
+
+    // geef naam en objecten continent (transitie naam naar boven, objecten naar beneden)
+    // text op cirkel zetten http://thenewcode.com/482/Placing-Text-on-a-Circle-with-SVG
+    svg.selectAll("circle")
+        .on("mouseover", function () {
+            d3.select(this)
+                .append("text")
+                .text( function(d) {
+                    return d.key;
+                });
+        })
+        .on("mouseout", function () {
+            d3.select(this)
+                .text(null);
+        });
+
+    // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box)
+    svg.selectAll("circle")
+        .on("click", function() {
+            // d3.select(this)
+            //     .append("text");
+        });
+
 }
 
 // -- Data ophalen en verwerken --
-
 async function configureData(url, query) {
     let data = await getData(url, query);
     // console.log("Raw data: ", data);
     data = transformData(data);
-    console.log("Transformed data: ", data);
-    plotData(data);
-    //return data;
+    //console.log("Transformed data: ", data);
+    return data;
 }
 
 // Data ophalen
@@ -195,32 +228,32 @@ function transformData(data) {
 // Data filteren
 function filterData(data) {
     data = data.map(item => {
-        let newArr = {};
+        let filtered = {};
         if (item.hasOwnProperty("placeName") === true) {
-            newArr.place = item.placeName.value;
+            filtered.place = item.placeName.value;
         }
         if (item.hasOwnProperty("continent") === true) {
-            newArr.continent = item.continent.value;
+            filtered.continent = item.continent.value;
         }
         if (item.hasOwnProperty("countryName") === true) {
-            newArr.country = item.countryName.value;
+            filtered.country = item.countryName.value;
         }
         if (item.hasOwnProperty("lat") === true) {
-            newArr.lat = Number(item.lat.value);
+            filtered.lat = Number(item.lat.value);
         }
         if (item.hasOwnProperty("long") === true) {
-            newArr.long = Number(item.long.value);
+            filtered.long = Number(item.long.value);
         }
         if (item.hasOwnProperty("category") === true) {
-            newArr.category = item.category.value;
+            filtered.category = item.category.value;
         }
         if (item.hasOwnProperty("objCount") === true) {
-            newArr.objects = Number(item.objCount.value);
+            filtered.objects = Number(item.objCount.value);
         }
         if (item.hasOwnProperty("type") === true) {
-            newArr.type = item.type.value;
+            filtered.type = item.type.value;
         }
-        return newArr;
+        return filtered;
     });
     return data;
 }
@@ -269,7 +302,7 @@ function calculateData(data) {
             }
         }
     }
-    console.log("Total objects: ", amount);
+    // console.log("Total objects: ", amount);
 
     // tel alle objecten van continent ---> Tip danny: loop over de key en values van het object
     data.forEach(function (continent) {
