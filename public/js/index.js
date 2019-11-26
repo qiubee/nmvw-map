@@ -136,7 +136,6 @@ function deleteNoScript() {
 async function drawMap() {
     const data = await d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json");
     const countries = topojson.feature(data, data.objects.countries);
-    console.log(data);
     svg.append("g")
         .attr("class", "countries")
         .selectAll("path")
@@ -175,23 +174,47 @@ function plotData(data) {
         .on("mouseover", function () {
             d3.select(this)
                 .append("text")
-                .text( function(d) {
+                .text(function (d) {
                     return d.key;
+                });
+
+            d3.select(this)
+                .attr("r", function (d) {
+                    return scale(d.objects) / 10;
+                })
+                .transition()
+                .attr("r", function (d) {
+                    return ((scale(d.objects) / 10) - (scale(d.objects) / 120));
                 });
         })
         .on("mouseout", function () {
             d3.select(this)
+                .attr("r", function (d) {
+                    return ((scale(d.objects) / 10) - (scale(d.objects) / 120));
+                })
+                .transition()
+                .attr("r", function (d) {
+                    return (scale(d.objects) / 10);
+                })
                 .text(null);
         });
 
-    // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box)
+    // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box, 
+    // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
     svg.selectAll("circle")
-        .on("click", function() {
-            // d3.select(this)
-            //     .append("text");
-        });
+        .on("click", function () {
+            console.log(this);
 
-}
+            // let continent;
+            // for (let id of data) {
+            //     if (id.key === this.__data__.key) {
+            //         continent = id.values;
+            //     }
+            // }
+            // console.log(continent);
+            
+        });
+    }
 
 // -- Data ophalen en verwerken --
 async function configureData(url, query) {
@@ -214,14 +237,14 @@ async function getData(url, query) {
 function transformData(data) {
     data = filterData(data);
     // console.log("Filtered data: ", data);
-    // translateCountryToDutch(data);
+    // data = translateCountryToDutch(data);
     // console.log("Translated country data: ", data);
     data = groupData(data);
     // console.log("Grouped data: ", data);
     data = addContinentLatLong(data);
     // console.log("Add coordinates to continents: ", data);
     data = calculateData(data);
-    // console.log("Calculated data: ", data);:  
+    console.log("Calculated data: ", data);  
     return data;
 }
 
@@ -271,7 +294,6 @@ function groupData(data) {
     return data;
 }
 
-
 // Voeg coordinaten van continenten toe
 function addContinentLatLong(data) {
     data.forEach(function (continent){
@@ -314,6 +336,20 @@ function calculateData(data) {
         }
         continent.objects = objects;
         return continent.amount;
+    });
+
+    // tel alle objecten per categorie van continent
+    data.forEach(function (continent) {
+        for (let country of continent.values) {
+            for (let category of country.values) {
+                category = d3.nest()
+                            .rollup(function (d) {
+                                return d.category;
+                            })
+                            .entries(category);
+                console.log(category);
+            }
+        }
     });
 
     // tel alle objecten van land
