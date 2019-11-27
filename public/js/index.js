@@ -168,7 +168,7 @@ function plotData(data) {
             return scale(d.objects) / 10;
         });
 
-    // geef naam en objecten continent (transitie naam continent naar boven, aantal objecten naar beneden)
+    // geef naam en objecten continent (transitie naam naar boven, objecten naar beneden)
     // text op cirkel zetten http://thenewcode.com/482/Placing-Text-on-a-Circle-with-SVG
     svg.selectAll("circle")
         .on("mouseover", function () {
@@ -199,10 +199,20 @@ function plotData(data) {
                 .text(null);
         });
 
-    // make bubble chart (voorbeelden gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box, 
+    // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box, 
     // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
     svg.selectAll("circle")
         .on("click", function () {
+            console.log(this);
+
+            // let continent;
+            // for (let id of data) {
+            //     if (id.key === this.__data__.key) {
+            //         continent = id.values;
+            //     }
+            // }
+            // console.log(continent);
+            
         });
     }
 
@@ -234,7 +244,7 @@ function transformData(data) {
     data = addContinentLatLong(data);
     // console.log("Add coordinates to continents: ", data);
     data = calculateData(data);
-    // console.log("Calculated data: ", data);  
+    console.log("Calculated data: ", data);  
     return data;
 }
 
@@ -328,6 +338,19 @@ function calculateData(data) {
         return continent.amount;
     });
 
+    // tel alle objecten per categorie van continent
+    data.forEach(function (continent) {
+        for (let country of continent.values) {
+            for (let category of country.values) {
+                category = d3.nest()
+                            .rollup(function (d) {
+                                return d.category;
+                            })
+                            .entries(category);
+                console.log(category);
+            }
+        }
+    });
 
     // tel alle objecten van land
     // nestedData.forEach(function (country) {
