@@ -57,3 +57,4 @@ Hoe de data is opgehaald is te zien in de wiki, ga naar *[Proces SPARQL](https:/
 ## Licentie
 
 **[MIT](https://github.com/qiubee/functional-programming/blob/master/LICENSE)**
+
