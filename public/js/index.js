@@ -198,22 +198,6 @@ function plotData(data) {
                 })
                 .text(null);
         });
-
-    // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box, 
-    // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
-    svg.selectAll("circle")
-        .on("click", function () {
-            console.log(this);
-
-            // let continent;
-            // for (let id of data) {
-            //     if (id.key === this.__data__.key) {
-            //         continent = id.values;
-            //     }
-            // }
-            // console.log(continent);
-            
-        });
     }
 
 // -- Data ophalen en verwerken --
@@ -336,20 +320,6 @@ function calculateData(data) {
         }
         continent.objects = objects;
         return continent.amount;
-    });
-
-    // tel alle objecten per categorie van continent
-    data.forEach(function (continent) {
-        for (let country of continent.values) {
-            for (let category of country.values) {
-                category = d3.nest()
-                            .rollup(function (d) {
-                                return d.category;
-                            })
-                            .entries(category);
-                console.log(category);
-            }
-        }
     });
 
     // tel alle objecten van land
