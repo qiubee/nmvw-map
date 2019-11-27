@@ -206,13 +206,33 @@ function plotData(data) {
         .on("click", function () {
             console.log(this);
 
-            // let continent;
-            // for (let id of data) {
-            //     if (id.key === this.__data__.key) {
-            //         continent = id.values;
-            //     }
-            // }
-            // console.log(continent);
+            let continent;
+            for (let id of data) {
+                if (id.key === this.__data__.key) {
+                    continent = id;
+                }
+            }
+
+            console.log(continent);
+
+            d3.select(this)
+                .remove();
+
+            console.log(continent.categories);
+
+            svg.selectAll(".continents")
+                .append("g")
+                .attr("class", "categories")
+                .data(continent.categories)
+                .enter()
+                .selectAll(".categories")
+                .append("circle")
+                .attr("r", function (d) {
+                    console.log(d);
+                    // return scale(d.objects) / 10;
+                });
+
+                
             
         });
     }
