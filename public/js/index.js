@@ -145,8 +145,9 @@ async function drawMap() {
         .attr("d", d => path(d));
 }
 
-// Data op de wereldkaart zetten
-// code gebruikt van: https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-tocsript en https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
+// Data op de wereldkaart zetten. Code gebruikt van:
+// https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-tocsript 
+// en https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
 function plotData(data) {
 
     // enter data
@@ -241,10 +242,10 @@ function transformData(data) {
     // console.log("Translated country data: ", data);
     data = groupData(data);
     // console.log("Grouped data: ", data);
-    data = addContinentLatLong(data);
-    // console.log("Add coordinates to continents: ", data);
+    data = addLatLong(data);
+    // console.log("Add coordinates: ", data);
     data = calculateData(data);
-    console.log("Calculated data: ", data);  
+    // console.log("Calculated data: ", data);  
     return data;
 }
 
@@ -278,31 +279,74 @@ function filterData(data) {
         }
         return filtered;
     });
+    
     return data;
 }
 
 // Groepeer data
 function groupData(data) {
     data = d3.nest()
+        // groepeer per continent
         .key(function (d) {
-            return d.continent;
+            return d.continent; 
         })
+        // groepeer per land
         .key(function (d) {
             return d.country;
         })
         .entries(data);
+
+    // groepeer categorieen per land
+    data.forEach(function (continent) {
+        for (let country of continent.values) {
+            let listOfCategories = [];
+            for (let info of country.values) {
+                category = { category: info.category, objects: info.objects };
+                listOfCategories.push(category);
+            }
+            country.categories = listOfCategories;
+        }
+    });
+
+    // groepeer categorieen per continent
+    data.forEach(function (continent) {
+        let categories = [];
+        for (let country of continent.values) {
+            for (let category of country.categories) {
+                categories.push(category);
+            }
+        }
+
+        categories = d3.nest()
+            .key(function (d) {
+                return d.category;
+            })
+            .entries(categories);
+
+        continent.categories = categories;
+    });
+
     return data;
 }
 
-// Voeg coordinaten van continenten toe
-function addContinentLatLong(data) {
+// Voeg coordinaten toe aan continent en land
+function addLatLong(data) {
+    
     data.forEach(function (continent){
+            // voeg coordinaten toe aan continent
             for (let nmvwCont of nmvw.continentCoordinates)
             if (continent.key === nmvwCont.continent) {
                 continent.lat = nmvwCont.lat;
                 continent.long = nmvwCont.long;
             }
+            
+            // voeg coordinaten toe aan land
+            for (let country of continent.values) {
+                country.lat = country.values[0].lat;
+                country.long = country.values[0].long;
+            }
     });
+
     return data;
 }
 
@@ -312,51 +356,49 @@ function calculateData(data) {
     // tel alle landen van continent
     data.forEach(function (continent) {
         continent.countries = continent.values.length;
-        return continent.countries;
     });
 
     // telt alle objecten
-    let amount = 0;
-    for (let continent of data) {
-        for (let country of continent.values) {
-            for (let category of country.values) {
-                amount += category.objects;
-            }
-        }
-    }
+    // let amount = 0;
+    // for (let continent of data) {
+    //     for (let country of continent.values) {
+    //         for (let category of country.values) {
+    //             amount += category.objects;
+    //         }
+    //     }
+    // }
     // console.log("Total objects: ", amount);
 
-    // tel alle objecten van continent ---> Tip danny: loop over de key en values van het object
+    // tel alle objecten van land
+    data.forEach(function (continent) {
+        for (let country of continent.values) {
+            let objects = 0;
+            for (let info of country.values) {
+                objects += info.objects;
+            }
+            country.objects = objects;
+        }
+    });
+
+    // tel alle objecten van continent
     data.forEach(function (continent) {
         let objects = 0;
         for (let country of continent.values) {
-            for (let category of country.values) {
-                objects += category.objects;
-            }
+            objects += country.objects;
         }
         continent.objects = objects;
-        return continent.amount;
     });
 
     // tel alle objecten per categorie van continent
     data.forEach(function (continent) {
-        for (let country of continent.values) {
-            for (let category of country.values) {
-                category = d3.nest()
-                            .rollup(function (d) {
-                                return d.category;
-                            })
-                            .entries(category);
-                console.log(category);
+        for (let category of continent.categories) {
+            let objects = 0;
+            for (let info of category.values) {
+                objects += info.objects;
             }
+            category.objects = objects;
         }
     });
-
-    // tel alle objecten van land
-    // nestedData.forEach(function (country) {
-    //     country.amount = country.amount;
-    //     return country.amount;
-    // });
 
     return data;
 }
