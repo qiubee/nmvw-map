@@ -2,6 +2,8 @@
 :root {
   --smooth-font: font-size ease 1s;
   --smooth-margin: margin ease 1s;
+  --smooth-fill: fill ease 0.4s;
+  --smooth-filter: filter ease 0.4s;
 }
 
 /* fonts */
@@ -122,7 +124,7 @@ svg {
   left: 50%;
   margin-left: -50vw;
   /* -- */
-  background: rgba(023, 121, 243, 0.7);
+  background: rgba(023, 121, 243, 0.8);
 }
 
 path {
@@ -131,8 +133,38 @@ path {
 }
 
 circle {
-  fill: darkslateblue;
-  r: 1em;
+  fill: #483d8b;
+  -webkit-filter: drop-shadow(0.25em 0.5em 0.9em rgba(0,0,0,0.4));
+     filter: drop-shadow(0.25em 0.5em 0.9em rgba(0,0,0,0.5));
+  transition: var(--smooth-fill), var(--smooth-filter);
+}
+
+circle:nth-of-type(n+3) {
+    -webkit-filter: drop-shadow(0.25em 0.5em 0.9em rgba(0,0,0,0.7));
+     filter: drop-shadow(0.25em 0.5em 0.9em rgba(0,0,0,0.7));
+}
+
+circle:last-of-type {
+  -webkit-filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
+     filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
+}
+
+circle:hover {
+  cursor: pointer;
+  fill: #1B1640;
+  -webkit-filter: drop-shadow(0.25em 0.5em 1.1em rgba(27,22,64,0.75));
+     filter: drop-shadow(0.25em 0.5em 1.1em rgba(27,22,64,0.75));
+  transition: var(--smooth-fill), var(--smooth-filter);
+}
+
+circle:hover:nth-of-type(n+2) {
+  -webkit-filter: drop-shadow(0.25em 0.5em 1.1em rgba(27,22,64,0.75));
+     filter: drop-shadow(0.25em 0.5em 0.7em rgba(27,22,64,0.75));
+}
+
+circle:hover:last-of-type {
+  -webkit-filter: drop-shadow(0.05em 0.1em 0.5em rgba(27,22,64,0.65));
+     filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
 }
 
 div h3 {
