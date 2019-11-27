@@ -1,14 +1,18 @@
 # Wereldkaart met populaire categorieën per continent en per land
 
-Een interactieve wereldkaart met het totaal aantal voorwerpen en de verdeling van categorieën per continent en per land. De data is afkomstig van de collectie van het Nationaal Museum van Wereldculturen. Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Express gebruikt voor het bouwen van de applicatie.
+Voor een nieuwe tentoonstelling over de collectie van het Tropenmuseum in Amsterdam wil tentoonstellingmaker Rik Herder met visualisaties laten zien wat er in een groter geheel te vinden is in de collectie van het Nationaal Museum van Wereldculturen. Zijn insteek is om de iconen van de collectie uit te lichten. Hij heeft de opdracht gegeven om een van zo'n datavisualisatie te laten maken.
+
+De visualisatie is een interactieve wereldkaart die het aantal objecten per continent en land laat zien en de verdeling laat zien van categorieën per continent en land.
 
 ![World map with pie charts showing top 3 of categories with the most objects found in the collection of the National Museum of Worldcultures](images/concept-small-cut.jpg)
+
+De data is afkomstig van de collectie van het Nationaal Museum van Wereldculturen. Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Express gebruikt voor het bouwen van de applicatie.
 
 **[Bekijk interactieve wereldkaart](https://qiubee.github.io/frontend-data/)**
 
 ## Concept
 
-Een interactieve datavisualisatie waarmee je de collectie van het Nationaal Museum van Wereldculturen kunt verkennen. Kijk op de wereldkaart waar objecten in de collectie zijn gevonden. Elk object in de collectie is gecategoriseerd. Met een cirkeldiagram worden de categorieën met de meeste objecten weergegeven. Klik op een van deze cirkels om dieper de collectie in te duiken om te ontdekken wat er verborgen zit in de collectie.
+Een interactieve wereldkaart die het aantal objecten per continent laat zien en de verdeling laat zien van categorieën per continent. Als er een continent wordt geselecteerd, wordt er ingezoomt op het continent. Dan is het mogelijk om een land te selecteren. Als er een land is geselecteerd, verschijnt er een bubble chart die de verdeling van categorieën laat zien.
 
 ## Benodigdheden
 
@@ -20,7 +24,7 @@ Andere benodigdheden zijn te vinden in [`package.json`](https://github.com/qiube
 
 ## Installeren
 
-Doe het volgende in de terminal om te installeren:
+Doe het volgende in de terminal om de app te installeren:
 
 1. `git clone https://github.com/qiubee/frontend-data.git`
 2. `npm install`
@@ -38,54 +42,17 @@ De data is opgehaald uit de database van het NMVW. Het NMVW gebruikt daarvoor SP
 * Hoofdcategorieën van objecten
 * Totaal aantal objecten per categorie
 
-Met deze SPARQL-query is het mogelijk de data op te halen:
+Hoe de data is opgehaald is te zien in de wiki, ga naar *[Proces SPARQL](https://github.com/qiubee/frontend-data/wiki/SPARQL)* om het te bekijken.
 
-```SPARQL
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX edm: <http://www.europeana.eu/schemas/edm/>
-PREFIX wgs84: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX gn: <http://www.geonames.org/ontology#>
+## Bronnen
 
-SELECT ?continent ?countryName ?lat ?long ?category (COUNT(?cho) AS ?objCount) WHERE {
-  
-  # CONTINENTEN
-  # geeft alle continenten
-  <https://hdl.handle.net/20.500.11840/termmaster2> skos:narrower ?geoTerm .
-  ?geoTerm skos:prefLabel ?continent .
-
-  # geeft per continent de onderliggende geografische termen
-  ?geoTerm skos:narrower* ?allGeoTerms .
-
-  # geeft objecten bij de onderliggende geografische termen
-  ?cho dct:spatial ?allGeoTerms .
-
-  # LANDEN
-  # zoekt in GeoNames naar de naam van het land
-  ?allGeoTerms skos:exactMatch/gn:parentCountry ?country .
-  ?country gn:name ?countryName .
-
-  # COORDINATEN
-  # geeft de latitude en longitude van het land
-  ?country wgs84:lat ?lat .
-  ?country wgs84:long ?long .
-  
-  # CATEGORIEEN
-  # geeft alle hoofdcategorieen
-  <https://hdl.handle.net/20.500.11840/termmaster2802> skos:narrower ?catTerm .
-  ?catTerm skos:prefLabel ?category .
-  
-  # geeft per categorie alle onderliggende categorische termen
-  ?catTerm skos:narrower* ?allCatTerms .
-  
-  # geeft objecten bij alle onderliggende categorische termen
-  ?cho edm:isRelatedTo ?allCatTerms .
-  
-} GROUP BY ?continent ?countryName ?lat ?long ?category
-ORDER BY DESC(?objCount)
-```
+* [Making a World Map with D3](https://www.youtube.com/watch?v=Qw6uAg3EO64)
+* [Stackoverflow: Put markers to a map generated with topoJSON and d3.js](https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-tocsript)
+* [Stackoverflow: Plotting Points on a Map with d3.js](https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
+* [Placing text on a circle with SVG](http://thenewcode.com/482/Placing-Text-on-a-Circle-with-SVG)
+* [Observable: Zoom to bounding box](https://observablehq.com/@d3/zoom-to-bounding-box)
+* [Observable: Force bubbles](https://observablehq.com/@rocss/test)
+* [Observable: Clustered bubbles](https://observablehq.com/@mbostock/clustered-bubbles)
 
 ## Licentie
 
