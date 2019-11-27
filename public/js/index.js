@@ -203,16 +203,6 @@ function plotData(data) {
     // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
     svg.selectAll("circle")
         .on("click", function () {
-            console.log(this);
-
-            // let continent;
-            // for (let id of data) {
-            //     if (id.key === this.__data__.key) {
-            //         continent = id.values;
-            //     }
-            // }
-            // console.log(continent);
-            
         });
     }
 
@@ -244,7 +234,7 @@ function transformData(data) {
     data = addContinentLatLong(data);
     // console.log("Add coordinates to continents: ", data);
     data = calculateData(data);
-    console.log("Calculated data: ", data);  
+    // console.log("Calculated data: ", data);  
     return data;
 }
 
@@ -337,26 +327,6 @@ function calculateData(data) {
         continent.objects = objects;
         return continent.amount;
     });
-
-    // tel alle objecten per categorie van continent
-    data.forEach(function (continent) {
-        for (let country of continent.values) {
-            for (let category of country.values) {
-                category = d3.nest()
-                            .rollup(function (d) {
-                                return d.category;
-                            })
-                            .entries(category);
-                console.log(category);
-            }
-        }
-    });
-
-    // tel alle objecten van land
-    // nestedData.forEach(function (country) {
-    //     country.amount = country.amount;
-    //     return country.amount;
-    // });
 
     return data;
 }
