@@ -1,3 +1,4 @@
+"use strict";
 // object met nmvw info
 var nmvw = {
   apiURL: "https://api.data.netwerkdigitaalerfgoed.nl/datasets/ivo/NMVW/services/NMVW-05/sparql",
@@ -48,6 +49,7 @@ visualize();
 // --- Visualiseren ---
 function visualize() {
   var draw, data;
+  var regeneratorRuntime;
   return regeneratorRuntime.async(function visualize$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -64,6 +66,7 @@ function visualize() {
         case 6:
           data = _context.sent;
           plotData(data);
+          break;
 
         case 8:
         case "end":
@@ -83,6 +86,7 @@ function deleteNoScript() {
 // kaart maken met world-atlas (voorbeeld van: https://www.youtube.com/watch?v=Qw6uAg3EO64)
 function drawMap() {
   var data, countries;
+  var regeneratorRuntime;
   return regeneratorRuntime.async(function drawMap$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
@@ -153,6 +157,7 @@ function plotData(data) {
 // -- Data ophalen en verwerken --
 function configureData(url, query) {
   var data;
+  var regeneratorRuntime;
   return regeneratorRuntime.async(function configureData$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
@@ -178,6 +183,7 @@ function configureData(url, query) {
 // Data ophalen
 function getData(url, query) {
   var response, json, data;
+  var regeneratorRuntime;
   return regeneratorRuntime.async(function getData$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
