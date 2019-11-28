@@ -120,7 +120,7 @@ visualize();
 // --- Visualiseren ---
 async function visualize() {
 deleteNoScript();
-const draw = await drawMap();
+await drawMap();
 const data = await configureData(nmvw.apiURL, nmvw.apiQuery);
 plotData(data);
 }
@@ -137,7 +137,7 @@ async function drawMap() {
     const data = await d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json");
     const countries = topojson.feature(data, data.objects.countries);
     svg.append("g")
-        .attr("class", "countries")
+        .attr("id", "countries")
         .selectAll("path")
         .data(countries.features)
         .enter()
@@ -152,7 +152,7 @@ function plotData(data) {
 
     // enter data
     svg.append("g")
-        .attr("class", "continents")
+        .attr("id", "continents")
         .selectAll("circle")
         .data(data)
         .enter()
@@ -202,10 +202,13 @@ function plotData(data) {
 
     // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box, 
     // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
+
+    
     svg.selectAll("circle")
         .on("click", function () {
             console.log(this);
 
+            // haal data van geselecteerde continent
             let continent;
             for (let id of data) {
                 if (id.key === this.__data__.key) {
@@ -213,26 +216,83 @@ function plotData(data) {
                 }
             }
 
-            console.log(continent);
+            // zoom in op continent
+            
 
+            // verwijder cirkel continent
             d3.select(this)
+                .on("mouseover", null)
+                .on("mouseout", null)
+                .transition()
+                .attr("r", "0")
                 .remove();
 
-            console.log(continent.categories);
+            // maak bubble chart van categorieen
+            // (voorbeeld van: https://www.youtube.com/watch?v=lPr60pexvEM)
 
-            svg.selectAll(".continents")
-                .append("g")
-                .attr("class", "categories")
-                .data(continent.categories)
-                .enter()
-                .selectAll(".categories")
-                .append("circle")
-                .attr("r", function (d) {
-                    console.log(d);
-                    // return scale(d.objects) / 10;
+            const simulation = d3.forceSimulation()
+                    // uit elkaar halen
+                    .force("charge", d3.forceManyBody())
+                    // centreer
+                    .force("center", d3.forceCenter(0))
+                    // op breedte forceren
+                    .force("y", d3.forceY(0))
+                    // op lengte forceren 
+                    .force("x", d3.forceX(0))
+                    // laat het botsen
+                    .force("collide", d3.forceCollide(function (d) { 
+                        return (scale(d.objects) / 10) + 2; 
+                    })); 
+                    
+
+            simulation.nodes(continent.categories)
+                .on("tick", function () {
+                    circles
+                    .attr("cx", function (d) {
+                        return d.x;
+                    })
+                    .attr("cy", function (d) {
+                        return d.y;
+                    });
                 });
 
-                
+            const circles = svg.selectAll("#continents")
+                .append("g")
+                .attr("class", "categories")
+                .attr("transform", "translate(" + (projection([continent.long, continent.lat])[0]) + " " + (projection([continent.long, continent.lat])[1]) + ")")
+                .selectAll(".categories")
+                .data(continent.categories)
+                .enter()
+                .append("circle")
+                .attr("r", function (d) {
+                    return scale(d.objects) / 10;
+                })
+                .attr("data-tooltip", function (d) {
+                    return d.key;
+                })
+                // nodes slepen (functies om node te slepen van: https://observablehq.com/@rocss/test)
+                .call(d3.drag()
+                    .on("start", dragstart)
+                    .on("drag", dragged)
+                    .on("end", dragend));
+
+                function dragstart(d) {
+                        if (!d3.event.active) simulation.alphaTarget(1).restart();
+                        d.fx = d.x;
+                        d.fy = d.y;
+                      }
+                    
+                function dragged(d) {
+                        d.fx = d3.event.x;
+                        d.fy = d3.event.y;
+                      }
+                    
+                function dragend(d) {
+                        if (!d3.event.active) simulation.alphaTarget(0);
+                        d.fx = null;
+                        d.fy = null;
+                      }
+                // -------
             
         });
     }
