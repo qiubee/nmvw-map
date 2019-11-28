@@ -94,12 +94,13 @@ const scale = d3.scaleSqrt();
 const title = d3
     .select("div")
     .append("h2")
-    .text("Wereldkaart met populaire categorieën per continent en per land.");
+    .text("Wereldkaart die de plaats van de vondst en de categorie van objecten in de collectie van het NMVW laat zien.");
 
 const explanation = d3
     .select("div")
     .append("p")
-    .text("Klik op een cirkel om in te zoomen en selecteer een land om dieper in de collectie te duiken.");
+    //.text("Klik op een cirkel om in te zoomen en selecteer een land om dieper in de collectie te duiken.");
+    .text("Klik op een cirkel om de categorieën te tonen");
 
 const svg = d3
     .select("div")
@@ -114,6 +115,11 @@ const legend = d3
 const legendContent = d3
     .select("div")
     .append("p");
+
+// geef elke categorie een eigen kleur
+const colors = d3.scaleOrdinal()
+.domain(["communicatie", "kleding en persoonlijke versiering", "kunst", "wapens", "vestiging", "religie en ritueel", "voeding, drank, genotmiddelen", "nijverheid, handel en dienstverlening", "jacht, visserij, voedselgaring", "vervoer", "sociaal, politiek, juridisch", "land-, tuin- en bosbouw", "popular culture", "levenscyclus", "strijd en oorlog", "lichaamsverzorging, geneeskunde, persoonlijk comfort", "ontspanning, sport en spel", "veeteelt en producten", "onbepaald"])
+.range(["#4B2259","#3C5D9E","#58CEED","#A1642B","#485922","#80B64E","#88e103","#F25C05","#4bc87d","#00A6A5","#ab04d9","#f2ca7e","#E3B58F","#b8c845","#f26d85","#734a19","#8c403a","#010326", "#314fef"]);
 
 visualize();
 
@@ -156,6 +162,10 @@ function plotData(data) {
         .selectAll("circle")
         .data(data)
         .enter()
+        .append("g")
+        .attr("id", function (d) {
+            return d.key;
+        })
         .append("circle")
         .attr("cx", function (d) {
             return projection([d.long, d.lat])[0];
@@ -173,12 +183,35 @@ function plotData(data) {
     // text op cirkel zetten http://thenewcode.com/482/Placing-Text-on-a-Circle-with-SVG
     svg.selectAll("circle")
         .on("mouseover", function () {
-            d3.select(this)
+            // haal data van geselecteerde continent
+            let continent;
+            for (let id of data) {
+                if (id.key === this.__data__.key) {
+                    continent = id;
+                }
+            }
+
+            continentInfo = d3.select("#" + continent.key)
+                .append("g")
+                .attr("transform", "translate(" + (projection([continent.long, continent.lat])[0]) + " " + (projection([continent.long, continent.lat])[1]) + ")");
+
+            // voeg tekst toe met naam continent
+            continentInfo
                 .append("text")
                 .text(function (d) {
                     return d.key;
-                });
+                })
+                .style("transform", "translateY(-" + 2 + "em)");
 
+            // voeg tekst toe met aantal objecten continent
+            continentInfo
+                .append("text")
+                .text(function (d) {
+                    return d.objects;
+                })
+                .style("transform", "translateY(" + 3 + "em)");
+
+            // maak cirkelradius kleiner op hover
             d3.select(this)
                 .attr("r", function (d) {
                     return scale(d.objects) / 10;
@@ -189,6 +222,7 @@ function plotData(data) {
                 });
         })
         .on("mouseout", function () {
+            // zet cirkelradius terug op originele waarde
             d3.select(this)
                 .attr("r", function (d) {
                     return ((scale(d.objects) / 10) - (scale(d.objects) / 120));
@@ -196,17 +230,7 @@ function plotData(data) {
                 .transition()
                 .attr("r", function (d) {
                     return (scale(d.objects) / 10);
-                })
-                .text(null);
-        });
-
-    // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box, 
-    // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
-
-    
-    svg.selectAll("circle")
-        .on("click", function () {
-            console.log(this);
+                });
 
             // haal data van geselecteerde continent
             let continent;
@@ -215,6 +239,28 @@ function plotData(data) {
                     continent = id;
                 }
             }
+
+            // verwijder tekst
+            d3.selectAll("#" + continent.key + " g")
+                .remove();
+        });
+
+    // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box, 
+    // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
+
+    
+    svg.selectAll("circle")
+        .on("click", function () {
+            // haal data van geselecteerde continent
+            let continent;
+            for (let id of data) {
+                if (id.key === this.__data__.key) {
+                    continent = id;
+                }
+            }
+
+            d3.selectAll("#" + continent.key + " g")
+                .remove();
 
             // zoom in op continent
             
@@ -239,7 +285,7 @@ function plotData(data) {
                     .force("y", d3.forceY(0))
                     // op lengte forceren 
                     .force("x", d3.forceX(0))
-                    // laat het botsen
+                    // laten botsen
                     .force("collide", d3.forceCollide(function (d) { 
                         return (scale(d.objects) / 10) + 2; 
                     })); 
@@ -256,19 +302,20 @@ function plotData(data) {
                     });
                 });
 
-            const circles = svg.selectAll("#continents")
+            const circles = svg.selectAll("#" + continent.key)
                 .append("g")
                 .attr("class", "categories")
                 .attr("transform", "translate(" + (projection([continent.long, continent.lat])[0]) + " " + (projection([continent.long, continent.lat])[1]) + ")")
                 .selectAll(".categories")
                 .data(continent.categories)
                 .enter()
+                .append("g")
                 .append("circle")
                 .attr("r", function (d) {
                     return scale(d.objects) / 10;
                 })
-                .attr("data-tooltip", function (d) {
-                    return d.key;
+                .style("fill", function (d) {
+                    return colors(d.key);
                 })
                 // nodes slepen (functies om node te slepen van: https://observablehq.com/@rocss/test)
                 .call(d3.drag()
@@ -293,6 +340,13 @@ function plotData(data) {
                         d.fy = null;
                       }
                 // -------
+
+                // toon info van categorie op hover
+                svg.selectAll("#" + continent.key + " g g")
+                .append("title")
+                .text(function (d) {
+                    return `Categorie: ${d.key}\n Aantal objecten: ${d.objects}`;
+                });
             
         });
     }
