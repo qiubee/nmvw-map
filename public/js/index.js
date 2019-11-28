@@ -94,12 +94,13 @@ const scale = d3.scaleSqrt();
 const title = d3
     .select("div")
     .append("h2")
-    .text("Wereldkaart met populaire categorieën per continent en per land.");
+    .text("Wereldkaart die de plaats van de vondst en de categorie van objecten in de collectie van het NMVW laat zien.");
 
 const explanation = d3
     .select("div")
     .append("p")
-    .text("Klik op een cirkel om in te zoomen en selecteer een land om dieper in de collectie te duiken.");
+    //.text("Klik op een cirkel om in te zoomen en selecteer een land om dieper in de collectie te duiken.");
+    .text("Klik op een cirkel om de categorieën te tonen");
 
 const svg = d3
     .select("div")
@@ -115,12 +116,17 @@ const legendContent = d3
     .select("div")
     .append("p");
 
+// geef elke categorie een eigen kleur
+const colors = d3.scaleOrdinal()
+.domain(["communicatie", "kleding en persoonlijke versiering", "kunst", "wapens", "vestiging", "religie en ritueel", "voeding, drank, genotmiddelen", "nijverheid, handel en dienstverlening", "jacht, visserij, voedselgaring", "vervoer", "sociaal, politiek, juridisch", "land-, tuin- en bosbouw", "popular culture", "levenscyclus", "strijd en oorlog", "lichaamsverzorging, geneeskunde, persoonlijk comfort", "ontspanning, sport en spel", "veeteelt en producten", "onbepaald"])
+.range(["#4B2259","#3C5D9E","#58CEED","#A1642B","#485922","#80B64E","#88e103","#F25C05","#4bc87d","#00A6A5","#ab04d9","#f2ca7e","#E3B58F","#b8c845","#f26d85","#734a19","#8c403a","#010326", "#314fef"]);
+
 visualize();
 
 // --- Visualiseren ---
 async function visualize() {
 deleteNoScript();
-const draw = await drawMap();
+await drawMap();
 const data = await configureData(nmvw.apiURL, nmvw.apiQuery);
 plotData(data);
 }
@@ -137,7 +143,7 @@ async function drawMap() {
     const data = await d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json");
     const countries = topojson.feature(data, data.objects.countries);
     svg.append("g")
-        .attr("class", "countries")
+        .attr("id", "countries")
         .selectAll("path")
         .data(countries.features)
         .enter()
@@ -145,16 +151,21 @@ async function drawMap() {
         .attr("d", d => path(d));
 }
 
-// Data op de wereldkaart zetten
-// code gebruikt van: https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-tocsript en https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
+// Data op de wereldkaart zetten. Code gebruikt van:
+// https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-tocsript 
+// en https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
 function plotData(data) {
 
     // enter data
     svg.append("g")
-        .attr("class", "continents")
+        .attr("id", "continents")
         .selectAll("circle")
         .data(data)
         .enter()
+        .append("g")
+        .attr("id", function (d) {
+            return d.key;
+        })
         .append("circle")
         .attr("cx", function (d) {
             return projection([d.long, d.lat])[0];
@@ -172,12 +183,35 @@ function plotData(data) {
     // text op cirkel zetten http://thenewcode.com/482/Placing-Text-on-a-Circle-with-SVG
     svg.selectAll("circle")
         .on("mouseover", function () {
-            d3.select(this)
+            // haal data van geselecteerde continent
+            let continent;
+            for (let id of data) {
+                if (id.key === this.__data__.key) {
+                    continent = id;
+                }
+            }
+
+            continentInfo = d3.select("#" + continent.key)
+                .append("g")
+                .attr("transform", "translate(" + (projection([continent.long, continent.lat])[0]) + " " + (projection([continent.long, continent.lat])[1]) + ")");
+
+            // voeg tekst toe met naam continent
+            continentInfo
                 .append("text")
                 .text(function (d) {
                     return d.key;
-                });
+                })
+                .style("transform", "translateY(-" + 2 + "em)");
 
+            // voeg tekst toe met aantal objecten continent
+            continentInfo
+                .append("text")
+                .text(function (d) {
+                    return d.objects;
+                })
+                .style("transform", "translateY(" + 3 + "em)");
+
+            // maak cirkelradius kleiner op hover
             d3.select(this)
                 .attr("r", function (d) {
                     return scale(d.objects) / 10;
@@ -188,6 +222,7 @@ function plotData(data) {
                 });
         })
         .on("mouseout", function () {
+            // zet cirkelradius terug op originele waarde
             d3.select(this)
                 .attr("r", function (d) {
                     return ((scale(d.objects) / 10) - (scale(d.objects) / 120));
@@ -195,14 +230,124 @@ function plotData(data) {
                 .transition()
                 .attr("r", function (d) {
                     return (scale(d.objects) / 10);
-                })
-                .text(null);
+                });
+
+            // haal data van geselecteerde continent
+            let continent;
+            for (let id of data) {
+                if (id.key === this.__data__.key) {
+                    continent = id;
+                }
+            }
+
+            // verwijder tekst
+            d3.selectAll("#" + continent.key + " g")
+                .remove();
         });
 
     // make bubble chart (voorbeeld gebruikt van: https://observablehq.com/@d3/zoom-to-bounding-box, 
     // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
+
+    
     svg.selectAll("circle")
         .on("click", function () {
+            // haal data van geselecteerde continent
+            let continent;
+            for (let id of data) {
+                if (id.key === this.__data__.key) {
+                    continent = id;
+                }
+            }
+
+            d3.selectAll("#" + continent.key + " g")
+                .remove();
+
+            // zoom in op continent
+            
+
+            // verwijder cirkel continent
+            d3.select(this)
+                .on("mouseover", null)
+                .on("mouseout", null)
+                .transition()
+                .attr("r", "0")
+                .remove();
+
+            // maak bubble chart van categorieen
+            // (voorbeeld van: https://www.youtube.com/watch?v=lPr60pexvEM)
+
+            const simulation = d3.forceSimulation()
+                    // uit elkaar halen
+                    .force("charge", d3.forceManyBody())
+                    // centreer
+                    .force("center", d3.forceCenter(0))
+                    // op breedte forceren
+                    .force("y", d3.forceY(0))
+                    // op lengte forceren 
+                    .force("x", d3.forceX(0))
+                    // laten botsen
+                    .force("collide", d3.forceCollide(function (d) { 
+                        return (scale(d.objects) / 10) + 2; 
+                    })); 
+                    
+
+            simulation.nodes(continent.categories)
+                .on("tick", function () {
+                    circles
+                    .attr("cx", function (d) {
+                        return d.x;
+                    })
+                    .attr("cy", function (d) {
+                        return d.y;
+                    });
+                });
+
+            const circles = svg.selectAll("#" + continent.key)
+                .append("g")
+                .attr("class", "categories")
+                .attr("transform", "translate(" + (projection([continent.long, continent.lat])[0]) + " " + (projection([continent.long, continent.lat])[1]) + ")")
+                .selectAll(".categories")
+                .data(continent.categories)
+                .enter()
+                .append("g")
+                .append("circle")
+                .attr("r", function (d) {
+                    return scale(d.objects) / 10;
+                })
+                .style("fill", function (d) {
+                    return colors(d.key);
+                })
+                // nodes slepen (functies om node te slepen van: https://observablehq.com/@rocss/test)
+                .call(d3.drag()
+                    .on("start", dragstart)
+                    .on("drag", dragged)
+                    .on("end", dragend));
+
+                function dragstart(d) {
+                        if (!d3.event.active) simulation.alphaTarget(1).restart();
+                        d.fx = d.x;
+                        d.fy = d.y;
+                      }
+                    
+                function dragged(d) {
+                        d.fx = d3.event.x;
+                        d.fy = d3.event.y;
+                      }
+                    
+                function dragend(d) {
+                        if (!d3.event.active) simulation.alphaTarget(0);
+                        d.fx = null;
+                        d.fy = null;
+                      }
+                // -------
+
+                // toon info van categorie op hover
+                svg.selectAll("#" + continent.key + " g g")
+                .append("title")
+                .text(function (d) {
+                    return `Categorie: ${d.key}\n Aantal objecten: ${d.objects}`;
+                });
+            
         });
     }
 
@@ -231,8 +376,8 @@ function transformData(data) {
     // console.log("Translated country data: ", data);
     data = groupData(data);
     // console.log("Grouped data: ", data);
-    data = addContinentLatLong(data);
-    // console.log("Add coordinates to continents: ", data);
+    data = addLatLong(data);
+    // console.log("Add coordinates: ", data);
     data = calculateData(data);
     // console.log("Calculated data: ", data);  
     return data;
@@ -268,31 +413,74 @@ function filterData(data) {
         }
         return filtered;
     });
+    
     return data;
 }
 
 // Groepeer data
 function groupData(data) {
     data = d3.nest()
+        // groepeer per continent
         .key(function (d) {
-            return d.continent;
+            return d.continent; 
         })
+        // groepeer per land
         .key(function (d) {
             return d.country;
         })
         .entries(data);
+
+    // groepeer categorieen per land
+    data.forEach(function (continent) {
+        for (let country of continent.values) {
+            let listOfCategories = [];
+            for (let info of country.values) {
+                category = { category: info.category, objects: info.objects };
+                listOfCategories.push(category);
+            }
+            country.categories = listOfCategories;
+        }
+    });
+
+    // groepeer categorieen per continent
+    data.forEach(function (continent) {
+        let categories = [];
+        for (let country of continent.values) {
+            for (let category of country.categories) {
+                categories.push(category);
+            }
+        }
+
+        categories = d3.nest()
+            .key(function (d) {
+                return d.category;
+            })
+            .entries(categories);
+
+        continent.categories = categories;
+    });
+
     return data;
 }
 
-// Voeg coordinaten van continenten toe
-function addContinentLatLong(data) {
+// Voeg coordinaten toe aan continent en land
+function addLatLong(data) {
+    
     data.forEach(function (continent){
+            // voeg coordinaten toe aan continent
             for (let nmvwCont of nmvw.continentCoordinates)
             if (continent.key === nmvwCont.continent) {
                 continent.lat = nmvwCont.lat;
                 continent.long = nmvwCont.long;
             }
+            
+            // voeg coordinaten toe aan land
+            for (let country of continent.values) {
+                country.lat = country.values[0].lat;
+                country.long = country.values[0].long;
+            }
     });
+
     return data;
 }
 
@@ -302,30 +490,37 @@ function calculateData(data) {
     // tel alle landen van continent
     data.forEach(function (continent) {
         continent.countries = continent.values.length;
-        return continent.countries;
     });
 
     // telt alle objecten
-    let amount = 0;
-    for (let continent of data) {
-        for (let country of continent.values) {
-            for (let category of country.values) {
-                amount += category.objects;
-            }
-        }
-    }
+    // let amount = 0;
+    // for (let continent of data) {
+    //     for (let country of continent.values) {
+    //         for (let category of country.values) {
+    //             amount += category.objects;
+    //         }
+    //     }
+    // }
     // console.log("Total objects: ", amount);
 
-    // tel alle objecten van continent ---> Tip danny: loop over de key en values van het object
+    // tel alle objecten van land
+    data.forEach(function (continent) {
+        for (let country of continent.values) {
+            let objects = 0;
+            for (let info of country.values) {
+                objects += info.objects;
+            }
+            country.objects = objects;
+        }
+    });
+
+    // tel alle objecten van continent
     data.forEach(function (continent) {
         let objects = 0;
         for (let country of continent.values) {
-            for (let category of country.values) {
-                objects += category.objects;
-            }
+            objects += country.objects;
         }
         continent.objects = objects;
-        return continent.amount;
     });
 
     // tel alle objecten per categorie van continent
