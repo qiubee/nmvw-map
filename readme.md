@@ -1,4 +1,4 @@
-# Wereldkaart met populaire categorieën per continent en per land
+# Wereldkaart van gevonden objecten uit de NMVW-collectie
 
 Voor een nieuwe tentoonstelling over de collectie van het Tropenmuseum in Amsterdam wil tentoonstellingmaker Rik Herder met visualisaties laten zien wat er in een groter geheel te vinden is in de collectie van het Nationaal Museum van Wereldculturen. Zijn insteek is om de iconen van de collectie uit te lichten. Hij heeft de opdracht gegeven om een van zo'n datavisualisatie te laten maken.
 
@@ -46,10 +46,10 @@ Hoe de data is opgehaald is te zien in de wiki, ga naar *[Proces SPARQL](https:/
 
 ## Bronnen
 
-* [Making a World Map with D3](https://www.youtube.com/watch?v=Qw6uAg3EO64)
+* [YouTube: Making a World Map with D3](https://www.youtube.com/watch?v=Qw6uAg3EO64)
+* [YouTube: Making an interactive bubble chart with D3 v4](https://www.youtube.com/watch?v=lPr60pexvEM)
 * [Stackoverflow: Put markers to a map generated with topoJSON and d3.js](https://stackoverflow.com/questions/21397608/put-markers-to-a-map-generated-with-tocsript)
 * [Stackoverflow: Plotting Points on a Map with d3.js](https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
-* [Placing text on a circle with SVG](http://thenewcode.com/482/Placing-Text-on-a-Circle-with-SVG)
 * [Observable: Zoom to bounding box](https://observablehq.com/@d3/zoom-to-bounding-box)
 * [Observable: Force bubbles](https://observablehq.com/@rocss/test)
 * [Observable: Clustered bubbles](https://observablehq.com/@mbostock/clustered-bubbles)
@@ -57,4 +57,3 @@ Hoe de data is opgehaald is te zien in de wiki, ga naar *[Proces SPARQL](https:/
 ## Licentie
 
 **[MIT](https://github.com/qiubee/functional-programming/blob/master/LICENSE)**
-
