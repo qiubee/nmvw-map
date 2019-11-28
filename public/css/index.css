@@ -158,13 +158,30 @@ circle:hover {
 }
 
 circle:hover:nth-of-type(n+2) {
-  -webkit-filter: drop-shadow(0.25em 0.5em 1.1em rgba(27,22,64,0.75));
+  -webkit-filter: drop-shadow(0.25em 0.5em 0.7em rgba(27,22,64,0.75));
      filter: drop-shadow(0.25em 0.5em 0.7em rgba(27,22,64,0.75));
 }
 
 circle:hover:last-of-type {
-  -webkit-filter: drop-shadow(0.05em 0.1em 0.5em rgba(27,22,64,0.65));
+  -webkit-filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
      filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
+}
+
+#continents text {
+  font-family: Montserrat;
+  fill: #ECFF1C;
+  -webkit-filter: drop-shadow(0em 0.1em 0.1em rgb(8, 4, 37));
+     filter: drop-shadow(0em 0.1em 0.1em rgb(8, 4, 37));
+}
+
+#continents text:first-of-type {
+  font-size: 1.25em;
+  font-weight: 700;
+}
+
+#continents text:last-of-type {
+  font-size: 1em;
+  font-weight: 400;
 }
 
 div h3 {
