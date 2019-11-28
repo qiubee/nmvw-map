@@ -180,7 +180,6 @@ function plotData(data) {
         });
 
     // geef naam en objecten continent (transitie naam naar boven, objecten naar beneden)
-    // text op cirkel zetten http://thenewcode.com/482/Placing-Text-on-a-Circle-with-SVG
     svg.selectAll("circle")
         .on("mouseover", function () {
             // haal data van geselecteerde continent
