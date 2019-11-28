@@ -328,5 +328,16 @@ function calculateData(data) {
         return continent.amount;
     });
 
+    // tel alle objecten per categorie van continent
+    data.forEach(function (continent) {
+        for (let category of continent.categories) {
+            let objects = 0;
+            for (let info of category.values) {
+                objects += info.objects;
+            }
+            category.objects = objects;
+        }
+    });
+
     return data;
 }
