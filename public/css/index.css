@@ -139,17 +139,17 @@ circle {
   transition: var(--smooth-fill), var(--smooth-filter);
 }
 
-circle:nth-of-type(n+3) {
+#continents circle:nth-of-type(n+3) {
     -webkit-filter: drop-shadow(0.25em 0.5em 0.9em rgba(0,0,0,0.7));
      filter: drop-shadow(0.25em 0.5em 0.9em rgba(0,0,0,0.7));
 }
 
-circle:last-of-type {
+#continents circle:last-of-type {
   -webkit-filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
      filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
 }
 
-circle:hover {
+#continents circle:hover {
   cursor: pointer;
   fill: #1B1640;
   -webkit-filter: drop-shadow(0.25em 0.5em 1.1em rgba(27,22,64,0.75));
@@ -157,12 +157,12 @@ circle:hover {
   transition: var(--smooth-fill), var(--smooth-filter);
 }
 
-circle:hover:nth-of-type(n+2) {
+#continents circle:hover:nth-of-type(n+2) {
   -webkit-filter: drop-shadow(0.25em 0.5em 0.7em rgba(27,22,64,0.75));
      filter: drop-shadow(0.25em 0.5em 0.7em rgba(27,22,64,0.75));
 }
 
-circle:hover:last-of-type {
+#continents circle:hover:last-of-type {
   -webkit-filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
      filter: drop-shadow(0.05em 0.1em 0.25em rgba(27,22,64,0.65));
 }
@@ -182,6 +182,10 @@ circle:hover:last-of-type {
 #continents text:last-of-type {
   font-size: 1em;
   font-weight: 400;
+}
+
+#legenda {
+  transform: translateX(1em)
 }
 
 div h3 {
