@@ -88,7 +88,7 @@ const nmvw = {
 
 const projection = d3.geoPatterson();
 const path = d3.geoPath().projection(projection);
-const scale = d3.scaleSqrt();
+// const scale = d3.scaleSqrt()
 
 // -- Elementen aanmaken --
 const title = d3
@@ -106,11 +106,6 @@ const svg = d3
     .select("div")
     .append("svg")
     .attr("viewBox", "50 0 850 496");
-
-const legend = d3
-    .select("div")
-    .append("h3")
-    .text("Legenda");
 
 const legendContent = d3
     .select("div")
@@ -156,7 +151,12 @@ async function drawMap() {
 // en https://stackoverflow.com/questions/26956778/plotting-points-on-a-map-with-d3-js)
 function plotData(data) {
 
-    // enter data
+    // maximum aantal objecten van continenten
+    const maxContintents = d3.max(data, function (d) { return d.objects; });
+    // schaal radius op aantal objecten continenten
+    const scale = d3.scaleSqrt().domain([0, maxContintents]).range([40, 500]);
+
+    // plot cirkels continenten
     svg.append("g")
         .attr("id", "continents")
         .selectAll("circle")
@@ -179,8 +179,23 @@ function plotData(data) {
             return scale(d.objects) / 10;
         });
 
+    // Legenda: grootte cirkels continenten 
+    // (code voorbeeld van: https://www.d3-graph-gallery.com/graph/bubble_legend.html)
+    svg.append("g")
+        .attr("id", "legenda")
+        .attr("transform", "translate(" + 600 + " " + 120 + ")")
+        .selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cy", "400")
+        .attr("cx", "400")
+        .attr("r", "10")
+        .style("fill", "none")
+        .attr("stroke", "black");
+
     // geef naam en objecten continent (transitie naam naar boven, objecten naar beneden)
-    svg.selectAll("circle")
+    svg.selectAll("#continents circle")
         .on("mouseover", function () {
             // haal data van geselecteerde continent
             let continent;
@@ -248,7 +263,7 @@ function plotData(data) {
     // https://observablehq.com/@rocss/test en https://observablehq.com/@mbostock/clustered-bubbles
 
     
-    svg.selectAll("circle")
+    svg.selectAll("#continents circle")
         .on("click", function () {
             // haal data van geselecteerde continent
             let continent;
@@ -261,7 +276,8 @@ function plotData(data) {
             d3.selectAll("#" + continent.key + " g")
                 .remove();
 
-            // zoom in op continent
+            // zoom in op continent & schaal cirkels
+            // UPDATE LEGENDA: links in hoek -> kleur van categorieen van objecten
             
 
             // verwijder cirkel continent
@@ -344,7 +360,7 @@ function plotData(data) {
                 svg.selectAll("#" + continent.key + " g g")
                 .append("title")
                 .text(function (d) {
-                    return `Categorie: ${d.key}\n Aantal objecten: ${d.objects}`;
+                    return `${d.key}\n Aantal objecten: ${d.objects}`;
                 });
             
         });
