@@ -1,9 +1,10 @@
 /*jshint esversion: 8 */
 
 // import { translateCountryToDutch } from "./translateCountryToDutch.js";
-// import * as d3 from "./libs/d3.v5.min.js";
-// import { geoPatterson, geoPath } from "./libs/d3-geo-projection.v2.js";
-// import * as topojson from "./libs/topojson.min.js";
+
+import * as d3 from "d3";
+import { geoPatterson } from "d3-geo-projection";
+import { topojson, feature } from "topojson";
 
 // object met nmvw info
 const nmvw = {
@@ -138,8 +139,8 @@ function deleteNoScript() {
 // Wereldkaart maken met d3 
 // kaart maken met world-atlas (voorbeeld van: https://www.youtube.com/watch?v=Qw6uAg3EO64)
 async function drawMap() {
-    const data = await d3.json(topo);
-    const countries = data.feature(data, data.objects.countries);
+    const data = await d3.json("110m.json");
+    const countries = topojson.feature(data, data.objects.countries);
     svg.append("g")
         .attr("id", "countries")
         .selectAll("path")
