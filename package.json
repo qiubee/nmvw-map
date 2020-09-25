@@ -26,13 +26,13 @@
   },
   "homepage": "https://github.com/qiubee/frontend-data#readme",
   "devDependencies": {
-    "@babel/cli": "^7.7.4",
-    "@babel/core": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
-    "nodemon": "^1.19.4"
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "nodemon": "^2.0.4"
   },
   "dependencies": {
-    "d3": "^5.14.1",
+    "d3": "^5.16.0",
     "express": "^4.17.1"
   }
 }
