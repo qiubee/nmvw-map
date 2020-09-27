@@ -1,61 +1,9 @@
 /*jshint esversion: 8 */
 
-// import { translateCountryToDutch } from "./translateCountryToDutch.js";
+import { api, queries } from "./api.js";
 
-// object met nmvw info
-const nmvw = {
-    apiURL: "https://api.data.netwerkdigitaalerfgoed.nl/datasets/ivo/NMVW/services/NMVW-05/sparql",
-    apiQuery: `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX dc: <http://purl.org/dc/elements/1.1/>
-    PREFIX dct: <http://purl.org/dc/terms/>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX edm: <http://www.europeana.eu/schemas/edm/>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX hdlh: <https://hdl.handle.net/20.500.11840/termmaster>
-    PREFIX wgs84: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-    PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX gn: <http://www.geonames.org/ontology#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    
-    SELECT ?continent ?countryName ?lat ?long ?category (COUNT(?cho) AS ?objCount) WHERE {
-      
-      # CONTINENTEN
-      # zoekt alle continenten
-      <https://hdl.handle.net/20.500.11840/termmaster2> skos:narrower ?geoTerm .
-      ?geoTerm skos:prefLabel ?continent .
-    
-      # geeft per continent de onderliggende geografische termen
-      ?geoTerm skos:narrower* ?allGeoTerms .
-    
-      # geeft objecten bij de onderliggende geografische termen
-      ?cho dct:spatial ?allGeoTerms .
-    
-      # LANDEN
-      # zoekt in GeoNames naar de naam van het land
-      ?allGeoTerms skos:exactMatch/gn:parentCountry ?country .
-      ?country gn:name ?countryName .
-    
-      # COORDINATEN
-      # geeft de latitude en longtitude van het land (coordinaten zijn niet precies)
-      ?country wgs84:lat ?lat .
-      ?country wgs84:long ?long .
-      
-      # CATEGORIEEN
-      # zoekt alle hoofdcategorieen
-      <https://hdl.handle.net/20.500.11840/termmaster2802> skos:narrower ?catTerm .
-      ?catTerm skos:prefLabel ?category .
-      
-      # geeft per categorie alle onderliggende categorische termen
-      ?catTerm skos:narrower* ?allCatTerms .
-      
-      # geeft objecten bij alle onderliggende categorische termen
-      ?cho edm:isRelatedTo ?allCatTerms
-      
-    } GROUP BY ?continent ?countryName ?lat ?long ?category
-    ORDER BY DESC(?objCount)`,
-    continentCoordinates: [{
+// coordinaten continenten
+const coordinates = [{
         continent: "Afrika",
         lat: 7,
         long: 21
@@ -83,8 +31,7 @@ const nmvw = {
         continent: "Oceanië",
         lat: -6.5,
         long: 128.5
-    }]
-};
+    }];
 
 const projection = d3.geoPatterson();
 const path = d3.geoPath().projection(projection);
@@ -127,7 +74,7 @@ visualize();
 async function visualize() {
 deleteNoScript();
 await drawMap();
-const data = await configureData(nmvw.apiURL, nmvw.apiQuery);
+const data = await configureData(api.generalURL, queries.queryCCT);
 plotData(data);
 }
 
@@ -362,18 +309,19 @@ async function configureData(url, query) {
 
 // Data ophalen
 async function getData(url, query) {
-    const response = await fetch(url + "?query=" + encodeURIComponent(query) + "&format=json");
-    const json = await response.json();
-    const data = json.results.bindings;
-    return data;
+	const response = await fetch(url + "?query=" + encodeURIComponent(query) + "&format=json");
+	if (response.ok && response.status === 200) {
+		return await response.json();
+	}
+	else {
+		return await d3.json("js/data/CTT.json");
+	}
 }
 
 // Data transformeren
 function transformData(data) {
     data = filterData(data);
-    // console.log("Filtered data: ", data);
-    // data = translateCountryToDutch(data);
-    // console.log("Translated country data: ", data);
+    console.log("Filtered data: ", data);
     data = groupData(data);
     // console.log("Grouped data: ", data);
     data = addLatLong(data);
