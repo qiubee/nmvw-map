@@ -1,7 +1,7 @@
 {
-  "name": "frontend-data",
-  "version": "1.0.0",
-  "description": "Interactive datavisualisation about the collection of the National Museum of Worldcultures",
+  "name": "nmvw-map",
+  "version": "1.0.1",
+  "description": "Interactive map showing how many objects of the collection of the National Museum of Worldcultures are in each category of a continent",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qiubee/frontend-data.git"
+    "url": "git+https://github.com/qiubee/nmvw-map.git"
   },
   "keywords": [
     "d3",
@@ -22,9 +22,9 @@
   "author": "qiubee",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/qiubee/frontend-data/issues"
+    "url": "https://github.com/qiubee/nmvw-map/issues"
   },
-  "homepage": "https://github.com/qiubee/frontend-data#readme",
+  "homepage": "https://github.com/qiubee/nmvw-map#readme",
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
