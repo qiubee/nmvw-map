@@ -1,18 +1,20 @@
 # Wereldkaart van gevonden objecten uit de NMVW-collectie
 
+![Interactive world map showing a different size circle on each continent with one continent (Africa) showing multiple smaller sized circles in multiple colors representing the categories of the collection of the National Museum of Worldcultures.](images/preview.png)
+
+**[Bekijk interactieve wereldkaart >](https://qiubee.github.io/frontend-data/)**
+
 Voor een nieuwe tentoonstelling over de collectie van het Tropenmuseum in Amsterdam wil tentoonstellingmaker Rik Herder met visualisaties laten zien wat er in een groter geheel te vinden is in de collectie van het Nationaal Museum van Wereldculturen. Zijn insteek is om de iconen van de collectie uit te lichten. Hij heeft de opdracht gegeven om een van zo'n datavisualisatie te laten maken.
 
-De visualisatie is een interactieve wereldkaart die het aantal objecten per continent en land laat zien en de verdeling laat zien van categorieën per continent en land.
-
-![World map with pie charts showing top 3 of categories with the most objects found in the collection of the National Museum of Worldcultures](images/concept-small-cut.jpg)
+De datavisualisatie is een interactieve wereldkaart die het aantal objecten per continent laat zien en de verdeling laat zien van categorieën in elk continent.
 
 De data is afkomstig van de collectie van het Nationaal Museum van Wereldculturen. Deze interactieve datavisualisatie is gemaakt met d3. Verder zijn Node.js en Express gebruikt voor het bouwen van de applicatie.
-
-**[Bekijk interactieve wereldkaart](https://qiubee.github.io/frontend-data/)**
 
 ## Concept
 
 Een interactieve wereldkaart die het aantal objecten per continent laat zien en de verdeling laat zien van categorieën per continent. Als er een continent wordt geselecteerd, wordt er ingezoomt op het continent. Dan is het mogelijk om een land te selecteren. Als er een land is geselecteerd, verschijnt er een bubble chart die de verdeling van categorieën laat zien.
+
+![World map with pie charts showing top 3 of categories with the most objects found in the collection of the National Museum of Worldcultures.](images/concept-small-cut.jpg)
 
 ## Benodigdheden
 
@@ -36,13 +38,11 @@ Ga naar `localhost:8000` in de browser om de interactieve visualisatie te bekijk
 
 De data is opgehaald uit de database van het NMVW. Het NMVW gebruikt daarvoor SPARQL. De data die wordt opgehaald bestaat uit:
 
-* Continent
-* Land
-* Coördinaten van het land
-* Hoofdcategorieën van objecten
-* Totaal aantal objecten per categorie
+* Geografische herkomst
+* Categorie
+* Aantal objecten
 
-Hoe de data is opgehaald is te zien in de wiki, ga naar *[Proces SPARQL](https://github.com/qiubee/frontend-data/wiki/SPARQL)* om het te bekijken.
+Hoe de data is opgehaald is te zien in de wiki, ga daarvoor naar sectie *[SPARQL](https://github.com/qiubee/frontend-data/wiki/SPARQL)*.
 
 ## Bronnen
 
