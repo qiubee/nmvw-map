@@ -2,7 +2,7 @@
 
 ![Interactive world map showing a different size circle on each continent with one continent (Africa) showing multiple smaller sized circles in multiple colors representing the categories of the collection of the National Museum of Worldcultures.](images/preview.png)
 
-**[Bekijk interactieve wereldkaart >](https://qiubee.github.io/frontend-data/)**
+**[Bekijk interactieve wereldkaart >](https://qiubee.github.io/nmvw-map/)**
 
 Voor een nieuwe tentoonstelling over de collectie van het Tropenmuseum in Amsterdam wil tentoonstellingmaker Rik Herder met visualisaties laten zien wat er in een groter geheel te vinden is in de collectie van het Nationaal Museum van Wereldculturen. Zijn insteek is om de iconen van de collectie uit te lichten. Hij heeft de opdracht gegeven om een van zo'n datavisualisatie te laten maken.
 
