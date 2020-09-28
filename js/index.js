@@ -54,15 +54,6 @@ const svg = d3
     .append("svg")
     .attr("viewBox", "50 0 850 496");
 
-const legend = d3
-    .select("div")
-    .append("h3")
-    .text("Legenda");
-
-const legendContent = d3
-    .select("div")
-    .append("p");
-
 // geef elke categorie een eigen kleur
 const colors = d3.scaleOrdinal()
 .domain(["communicatie", "kleding en persoonlijke versiering", "kunst", "wapens", "vestiging", "religie en ritueel", "voeding, drank, genotmiddelen", "nijverheid, handel en dienstverlening", "jacht, visserij, voedselgaring", "vervoer", "sociaal, politiek, juridisch", "land-, tuin- en bosbouw", "popular culture", "levenscyclus", "strijd en oorlog", "lichaamsverzorging, geneeskunde, persoonlijk comfort", "ontspanning, sport en spel", "veeteelt en producten", "onbepaald"])
