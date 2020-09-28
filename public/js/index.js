@@ -72,10 +72,10 @@ visualize();
 
 // --- Visualiseren ---
 async function visualize() {
-deleteNoScript();
-await drawMap();
-const data = await configureData(api.generalURL, queries.queryCCT);
-plotData(data);
+	deleteNoScript();
+	await drawMap();
+	const data = await configureData(api.generalURL, queries.queryCCT);
+	plotData(data);
 }
 
 // Verwijder noscript
@@ -87,7 +87,7 @@ function deleteNoScript() {
 // Wereldkaart maken met d3 
 // kaart maken met world-atlas (voorbeeld van: https://www.youtube.com/watch?v=Qw6uAg3EO64)
 async function drawMap() {
-    const data = await d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json");
+    const data = await d3.json("js/data/countries-110m.json");
     const countries = topojson.feature(data, data.objects.countries);
     svg.append("g")
         .attr("id", "countries")
@@ -111,7 +111,7 @@ function plotData(data) {
         .enter()
         .append("g")
         .attr("id", function (d) {
-            return d.key;
+            return d.continent;
         })
         .append("circle")
         .attr("cx", function (d) {
@@ -133,12 +133,12 @@ function plotData(data) {
             // haal data van geselecteerde continent
             let continent;
             for (let id of data) {
-                if (id.key === this.__data__.key) {
+                if (id.continent === this.__data__.continent) {
                     continent = id;
                 }
-            }
-
-            continentInfo = d3.select("#" + continent.key)
+			}
+			
+            let continentInfo = d3.select("#" + continent.continent)
                 .append("g")
                 .attr("transform", "translate(" + (projection([continent.long, continent.lat])[0]) + " " + (projection([continent.long, continent.lat])[1]) + ")");
 
@@ -146,7 +146,7 @@ function plotData(data) {
             continentInfo
                 .append("text")
                 .text(function (d) {
-                    return d.key;
+                    return d.continent;
                 })
                 .style("transform", "translateY(-" + 2 + "em)");
 
@@ -182,13 +182,13 @@ function plotData(data) {
             // haal data van geselecteerde continent
             let continent;
             for (let id of data) {
-                if (id.key === this.__data__.key) {
+                if (id.continent === this.__data__.continent) {
                     continent = id;
                 }
             }
 
             // verwijder tekst
-            d3.selectAll("#" + continent.key + " g")
+            d3.selectAll("#" + continent.continent + " g")
                 .remove();
         });
 
@@ -201,12 +201,12 @@ function plotData(data) {
             // haal data van geselecteerde continent
             let continent;
             for (let id of data) {
-                if (id.key === this.__data__.key) {
+                if (id.continent === this.__data__.continent) {
                     continent = id;
                 }
             }
 
-            d3.selectAll("#" + continent.key + " g")
+            d3.selectAll("#" + continent.continent + " g")
                 .remove();
 
             // zoom in op continent
@@ -249,7 +249,7 @@ function plotData(data) {
                     });
                 });
 
-            const circles = svg.selectAll("#" + continent.key)
+            const circles = svg.selectAll("#" + continent.continent)
                 .append("g")
                 .attr("class", "categories")
                 .attr("transform", "translate(" + (projection([continent.long, continent.lat])[0]) + " " + (projection([continent.long, continent.lat])[1]) + ")")
@@ -259,10 +259,10 @@ function plotData(data) {
                 .append("g")
                 .append("circle")
                 .attr("r", function (d) {
-                    return scale(d.objects) / 10;
+                    return scale(d.objects) / 7.5;
                 })
                 .style("fill", function (d) {
-                    return colors(d.key);
+                    return colors(d.category);
                 })
                 // nodes slepen (functies om node te slepen van: https://observablehq.com/@rocss/test)
                 .call(d3.drag()
@@ -270,29 +270,29 @@ function plotData(data) {
                     .on("drag", dragged)
                     .on("end", dragend));
 
-                function dragstart(d) {
-                        if (!d3.event.active) simulation.alphaTarget(1).restart();
+                function dragstart(event, d) {
+						if (!event.active) simulation.alphaTarget(1).restart();
                         d.fx = d.x;
                         d.fy = d.y;
+					  }
+                    
+                function dragged(event, d) {
+                        d.fx = event.x;
+                        d.fy = event.y;
                       }
                     
-                function dragged(d) {
-                        d.fx = d3.event.x;
-                        d.fy = d3.event.y;
-                      }
-                    
-                function dragend(d) {
-                        if (!d3.event.active) simulation.alphaTarget(0);
+                function dragend(event, d) {
+						if (!event.active) simulation.alphaTarget(0);
                         d.fx = null;
                         d.fy = null;
-                      }
+					  }
                 // -------
 
                 // toon info van categorie op hover
-                svg.selectAll("#" + continent.key + " g g")
+                svg.selectAll("#" + continent.continent + " g g")
                 .append("title")
                 .text(function (d) {
-                    return `Categorie: ${d.key}\n Aantal objecten: ${d.objects}`;
+                    return `Categorie: ${d.category}\n Aantal objecten: ${d.objects}`;
                 });
             
         });
@@ -321,7 +321,7 @@ async function getData(url, query) {
 // Data transformeren
 function transformData(data) {
     data = filterData(data);
-    console.log("Filtered data: ", data);
+    // console.log("Filtered data: ", data);
     data = groupData(data);
     // console.log("Grouped data: ", data);
     data = addLatLong(data);
@@ -333,154 +333,59 @@ function transformData(data) {
 
 // Data filteren
 function filterData(data) {
-    data = data.map(item => {
-        let filtered = {};
-        if (item.hasOwnProperty("placeName") === true) {
-            filtered.place = item.placeName.value;
-        }
-        if (item.hasOwnProperty("continent") === true) {
-            filtered.continent = item.continent.value;
-        }
-        if (item.hasOwnProperty("countryName") === true) {
-            filtered.country = item.countryName.value;
-        }
-        if (item.hasOwnProperty("lat") === true) {
-            filtered.lat = Number(item.lat.value);
-        }
-        if (item.hasOwnProperty("long") === true) {
-            filtered.long = Number(item.long.value);
-        }
-        if (item.hasOwnProperty("category") === true) {
-            filtered.category = item.category.value;
-        }
-        if (item.hasOwnProperty("objCount") === true) {
-            filtered.objects = Number(item.objCount.value);
-        }
-        if (item.hasOwnProperty("type") === true) {
-            filtered.type = item.type.value;
-        }
-        return filtered;
-    });
-    
+	data = data.map(function (item) {
+		if (item.objCount) {
+			item.objects = Number(item.objCount);
+			delete item.objCount;
+		}
+		return item;
+	});
     return data;
 }
 
 // Groepeer data
 function groupData(data) {
     data = d3.nest()
-        // groepeer per continent
-        .key(function (d) {
-            return d.continent; 
-        })
-        // groepeer per land
-        .key(function (d) {
-            return d.country;
-        })
-        .entries(data);
-
-    // groepeer categorieen per land
-    data.forEach(function (continent) {
-        for (let country of continent.values) {
-            let listOfCategories = [];
-            for (let info of country.values) {
-                category = { category: info.category, objects: info.objects };
-                listOfCategories.push(category);
-            }
-            country.categories = listOfCategories;
-        }
-    });
-
-    // groepeer categorieen per continent
-    data.forEach(function (continent) {
-        let categories = [];
-        for (let country of continent.values) {
-            for (let category of country.categories) {
-                categories.push(category);
-            }
-        }
-
-        categories = d3.nest()
-            .key(function (d) {
-                return d.category;
-            })
-            .entries(categories);
-
-        continent.categories = categories;
-    });
+	// groepeer per continent
+		.key(function (d) {
+			return d.continent; 
+		}).entries(data);
+		
+	// groepeer categorieen per continent en hernoem keys
+	data.map(function (continent) {
+		Object.defineProperty(continent, "categories", Object.getOwnPropertyDescriptor(continent, "values"));
+		Object.defineProperty(continent, "continent", Object.getOwnPropertyDescriptor(continent, "key"));
+		["key", "values"].forEach(function (key) {
+			delete continent[key];
+		});
+		return continent;
+	});
 
     return data;
 }
 
 // Voeg coordinaten toe aan continent en land
 function addLatLong(data) {
-    
-    data.forEach(function (continent){
+    data.map(function (continent){
             // voeg coordinaten toe aan continent
-            for (let nmvwCont of nmvw.continentCoordinates)
-            if (continent.key === nmvwCont.continent) {
-                continent.lat = nmvwCont.lat;
-                continent.long = nmvwCont.long;
-            }
-            
-            // voeg coordinaten toe aan land
-            for (let country of continent.values) {
-                country.lat = country.values[0].lat;
-                country.long = country.values[0].long;
+            for (let item of coordinates)
+            if (continent.continent === item.continent) {
+                continent.lat = item.lat;
+                continent.long = item.long;
             }
     });
-
     return data;
 }
 
 // Maak berekeningen met data
 function calculateData(data) {
 
-    // tel alle landen van continent
-    data.forEach(function (continent) {
-        continent.countries = continent.values.length;
-    });
-
-    // telt alle objecten
-    // let amount = 0;
-    // for (let continent of data) {
-    //     for (let country of continent.values) {
-    //         for (let category of country.values) {
-    //             amount += category.objects;
-    //         }
-    //     }
-    // }
-    // console.log("Total objects: ", amount);
-
-    // tel alle objecten van land
-    data.forEach(function (continent) {
-        for (let country of continent.values) {
-            let objects = 0;
-            for (let info of country.values) {
-                objects += info.objects;
-            }
-            country.objects = objects;
-        }
-    });
-
-    // tel alle objecten van continent
-    data.forEach(function (continent) {
-        let objects = 0;
-        for (let country of continent.values) {
-            objects += country.objects;
-        }
-        continent.objects = objects;
-    });
-
-    // tel alle objecten per categorie van continent
-    data.forEach(function (continent) {
-        for (let category of continent.categories) {
-            let objects = 0;
-            for (let info of category.values) {
-                objects += info.objects;
-            }
-            category.objects = objects;
-        }
-    });
-
+    // tel alle objecten per categorie per continent
+	data.map(function (continent) {
+		continent.objects = 0;
+		for (let category of continent.categories) {
+			continent.objects += category.objects;
+		}
+	});
     return data;
 }
