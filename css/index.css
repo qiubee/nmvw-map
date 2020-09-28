@@ -193,7 +193,7 @@ div h3 {
 
 footer {
   max-width: 77em;
-  margin: 0 0.5em 0.5em 0.5em;
+  margin: 0 0.5em 1.5em 0.5em;
 }
 
 footer h2 {
@@ -238,6 +238,14 @@ p > abbr:hover {
   cursor: pointer;
 }
 
+svg ~ p {
+	margin: 1.5em 0;
+}
+
+svg + p {
+	margin: 2em 0 0 0;
+}
+
 /* tablet */
 @media screen and (min-width: 35em) and (max-width: 65em) {
 
@@ -249,7 +257,7 @@ p > abbr:hover {
   }
   
   footer {
-    margin: 0 1.1em 0.5em 1.1em;
+    margin: 0 1.1em 1.5em 1.1em;
   }
   
   footer h2 {
@@ -297,7 +305,7 @@ p > abbr:hover {
   }
   
   footer {
-    margin: auto;
+    margin: 0 auto 2.5em auto;
   }
     
   footer h2 {
