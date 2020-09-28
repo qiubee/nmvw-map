@@ -17,11 +17,11 @@ const coordinates = [{
         long: 16
     }, {
         continent: "Azië",
-        lat: 30,
-        long: 89
+        lat: 50,
+        long: 100
     }, {
         continent: "Eurazië",
-        lat: 49,
+        lat: 54,
         long: 9
     }, {
         continent: "Oceanen",
@@ -43,16 +43,24 @@ const title = d3
     .append("h2")
     .text("Wereldkaart die de plaats van de vondst en de categorie van objecten in de collectie van het NMVW laat zien.");
 
-const explanation = d3
+const mapTitle = d3
     .select("div")
     .append("p")
-    //.text("Klik op een cirkel om in te zoomen en selecteer een land om dieper in de collectie te duiken.");
     .text("Klik op een cirkel om de categorieën te tonen");
 
 const svg = d3
     .select("div")
     .append("svg")
-    .attr("viewBox", "50 0 850 496");
+	.attr("viewBox", "50 0 850 496");
+	
+const explanation = d3
+	.select("div")
+	.append("p")
+	.text("Op de kaart wordt met de grootte van elke cirkel de hoeveelheid objecten die afkomstig zijn uit elk continent en de hoeveelheid objecten die tot elke categorie behoren laten zien.");
+	
+	d3.select("div")
+	.append("p")
+	.text("Klik op een cirkel van een continent om de categorieen te laten zien. Klik daarna op een van de cirkels die tevoorschijn komen om de hoeveelheid objecten van een categorie te bekijken");
 
 // geef elke categorie een eigen kleur
 const colors = d3.scaleOrdinal()
@@ -224,8 +232,8 @@ function plotData(data) {
                     // op lengte forceren 
                     .force("x", d3.forceX(0))
                     // laten botsen
-                    .force("collide", d3.forceCollide(function (d) { 
-                        return (scale(d.objects) / 10) + 2; 
+                    .force("collide", d3.forceCollide(function (d) {
+						return (scale(d.objects) / 10) + 2; 
                     })); 
                     
 
