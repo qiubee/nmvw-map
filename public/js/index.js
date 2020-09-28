@@ -60,7 +60,7 @@ const explanation = d3
 	
 	d3.select("div")
 	.append("p")
-	.text("Klik op een cirkel van een continent om de categorieen te laten zien. Klik daarna op een van de cirkels die tevoorschijn komen om de hoeveelheid objecten van een categorie te bekijken");
+	.text("Klik op een cirkel van een continent om de categorieen te laten zien. Klik daarna op een van de cirkels die tevoorschijn komen om de hoeveelheid objecten van een categorie te bekijken.");
 
 // geef elke categorie een eigen kleur
 const colors = d3.scaleOrdinal()
